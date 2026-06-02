@@ -8,6 +8,7 @@ import Moon from './Moon';
 import PlanetaryRing from './PlanetaryRing';
 
 type PlanetProps = {
+  id: string;
   distance: number;
   speed: number;
   size: number;
@@ -21,6 +22,7 @@ type PlanetProps = {
 };
 
 export default function Planet({
+  id,
   distance,
   speed,
   size,
@@ -131,7 +133,7 @@ export default function Planet({
         )}
 
         <group rotation={[axialTilt, 0, 0]}>
-          <mesh ref={planetMeshRef}>
+          <mesh ref={planetMeshRef} name={id}>
             <sphereGeometry args={[size, 64, 64]} />
             <meshStandardMaterial
               color={colorMap ? '#ffffff' : color}

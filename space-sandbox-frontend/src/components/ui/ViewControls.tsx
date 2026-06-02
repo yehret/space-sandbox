@@ -9,6 +9,8 @@ export default function ViewControls() {
     showOrbits,
     toggleOrbits,
     triggerCameraReset,
+    followTargetId,
+    setFollowTarget,
   } = useSystemStore();
 
   const buttons = [
@@ -36,19 +38,28 @@ export default function ViewControls() {
         ))}
       </div>
 
-      <button
-        onClick={triggerCameraReset}
-        className="w-12 h-12 bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-all shadow-xl"
-        title="Reset View">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-      </button>
+      {followTargetId ? (
+        <button
+          onClick={() => setFollowTarget(null)}
+          className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-all shadow-xl"
+          title="Unlock Camera">
+          <span className="text-xs">Unlock</span>
+        </button>
+      ) : (
+        <button
+          onClick={triggerCameraReset}
+          className="w-12 h-12 bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-all shadow-xl"
+          title="Reset View">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

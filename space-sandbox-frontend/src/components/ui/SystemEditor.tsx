@@ -9,7 +9,7 @@ export const SystemEditor = ({
   onEditStar: () => void;
   onEditBelt: (id: string) => void;
 }) => {
-  const { systems, activeSystemId, addPlanet, addBelt, setIsPaused } = useSystemStore();
+  const { systems, activeSystemId, addPlanet, addBelt, setFollowTarget } = useSystemStore();
   const activeSystem = systems.find((s) => s.id === activeSystemId);
   const planets = activeSystem?.planets || [];
   const star = activeSystem?.star;
@@ -31,7 +31,7 @@ export const SystemEditor = ({
       color: '#4ade80',
     });
     onEditPlanet(newId);
-    setIsPaused(true);
+    //  setIsPaused(true);
   };
 
   const handleAddNewBelt = () => {
@@ -47,7 +47,7 @@ export const SystemEditor = ({
       color: '#887766',
     });
     onEditBelt(newId);
-    setIsPaused(true);
+    //  setIsPaused(true);
   };
 
   return (
@@ -59,7 +59,7 @@ export const SystemEditor = ({
         <div
           onClick={() => {
             onEditStar();
-            setIsPaused(true);
+            // setIsPaused(true);
           }}
           className="p-3 bg-orange-500/10 hover:bg-orange-500/20 transition-colors rounded-xl border border-orange-500/30 cursor-pointer flex items-center gap-4 shadow-[inset_0_0_15px_rgba(249,115,22,0.1)]">
           <div
@@ -83,8 +83,9 @@ export const SystemEditor = ({
           <div
             key={planet.id}
             onClick={() => {
+              setFollowTarget(planet.id);
               onEditPlanet(planet.id);
-              setIsPaused(true);
+              //   setIsPaused(true);
             }}
             className="p-3 bg-white/5 hover:bg-white/10 transition-colors rounded-xl border border-white/5 cursor-pointer flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -100,7 +101,7 @@ export const SystemEditor = ({
             key={belt.id}
             onClick={() => {
               onEditBelt(belt.id);
-              setIsPaused(true);
+              //   setIsPaused(true);
             }}
             className="p-3 bg-white/5 hover:bg-white/10 transition-colors rounded-xl border border-white/5 cursor-pointer flex items-center justify-between border-dashed">
             <div className="flex items-center gap-3">

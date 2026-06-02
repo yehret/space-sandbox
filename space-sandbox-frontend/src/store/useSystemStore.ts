@@ -28,6 +28,9 @@ interface SystemStore {
   isZenMode: boolean;
   toggleZenMode: () => void;
 
+  followTargetId: string | null;
+  setFollowTarget: (id: string | null) => void;
+
   toggleGrid: () => void;
   toggleTrails: () => void;
   toggleOrbits: () => void;
@@ -298,12 +301,14 @@ export const useSystemStore = create<SystemStore>((set) => ({
   isSidebarOpen: true,
   cameraResetTrigger: 0,
   isZenMode: false,
+  followTargetId: null,
+
+  setFollowTarget: (id) => set({ followTargetId: id }),
   toggleZenMode: () =>
     set((state) => ({
       isZenMode: !state.isZenMode,
       isSidebarOpen: state.isZenMode ? true : false,
     })),
-
   toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
   toggleTrails: () => set((state) => ({ showTrails: !state.showTrails })),
   toggleOrbits: () => set((state) => ({ showOrbits: !state.showOrbits })),

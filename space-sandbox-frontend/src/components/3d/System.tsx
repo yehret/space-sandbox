@@ -58,6 +58,7 @@ export default function System() {
       {planets.map((planet) => (
         <Planet
           key={planet.id}
+          id={planet.id}
           distance={planet.distance}
           speed={planet.speed}
           size={planet.size}

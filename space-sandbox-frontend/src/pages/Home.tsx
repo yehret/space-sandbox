@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import System from '../components/3d/System';
+import { CameraFollower } from '../components/CameraFollower';
 import UI from '../components/UI';
 import { useSystemStore } from '../store/useSystemStore';
 
@@ -44,8 +45,10 @@ export default function Home() {
             enablePan={true}
             maxDistance={500}
             minDistance={15}
+            // onStart={() => setFollowTarget(null)}
           />
           <CameraResetter controlsRef={controlsRef} />
+          <CameraFollower controlsRef={controlsRef} />
         </Canvas>
       </div>
 
