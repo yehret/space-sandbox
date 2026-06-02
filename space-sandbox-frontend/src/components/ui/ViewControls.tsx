@@ -30,6 +30,7 @@ export default function ViewControls() {
                 : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
             }`}
             title={btn.label}>
+            {btn.label}
             {/* {btn.label.slice(0, 3)} */}
           </button>
         ))}

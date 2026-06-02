@@ -39,13 +39,13 @@ export const useSystemStore = create<SystemStore>((set) => ({
   systems: [
     {
       id: 'sys-solar',
-      name: 'Сонячна система',
-      createdAt: new Date().toLocaleDateString('uk-UA'),
-      star: { name: 'Сонце', size: 2.5, color: '#fff4e8', mass: 1 },
+      name: 'Solar System',
+      createdAt: new Date().toLocaleDateString('en-US'),
+      star: { name: 'Sun', size: 2.5, color: '#fff4e8', mass: 1 },
       planets: [
         {
           id: 'p-mercury',
-          name: 'Меркурій',
+          name: 'Mercury',
           type: 'terrestrial',
           mass: 0.055,
           distance: 8,
@@ -58,20 +58,20 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-venus',
-          name: 'Венера',
+          name: 'Venus',
           type: 'terrestrial',
           mass: 0.81,
           distance: 14,
           speed: 0.12,
           size: 0.48,
           color: '#e3bb76',
-          rotationSpeed: -0.002, // Венера обертається у зворотний бік!
+          rotationSpeed: -0.002, // Venus rotates in the opposite direction!
           axialTilt: 3.1,
           orbitalInclination: 0.06,
         },
         {
           id: 'p-earth',
-          name: 'Земля',
+          name: 'Earth',
           type: 'terrestrial',
           mass: 1,
           distance: 20,
@@ -79,14 +79,12 @@ export const useSystemStore = create<SystemStore>((set) => ({
           size: 0.5,
           color: '#2b82c9',
           rotationSpeed: 0.05,
-          axialTilt: 0.4, // Нахил 23.5 градуси в радіанах
+          axialTilt: 0.4,
           orbitalInclination: 0,
-          //  textureUrl:
-          //    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
           moons: [
             {
               id: 'm-moon',
-              name: 'Місяць',
+              name: 'Moon',
               size: 0.15,
               distance: 1.5,
               speed: 1.2,
@@ -97,7 +95,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-mars',
-          name: 'Марс',
+          name: 'Mars',
           type: 'terrestrial',
           mass: 0.1,
           distance: 28,
@@ -110,7 +108,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-jupiter',
-          name: 'Юпітер',
+          name: 'Jupiter',
           type: 'gas_giant',
           mass: 317,
           distance: 55,
@@ -123,7 +121,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
           moons: [
             {
               id: 'm-io',
-              name: 'Іо',
+              name: 'Io',
               size: 0.12,
               distance: 2.5,
               speed: 2.5,
@@ -132,7 +130,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
             },
             {
               id: 'm-europa',
-              name: 'Європа',
+              name: 'Europa',
               size: 0.1,
               distance: 3.5,
               speed: 1.8,
@@ -143,7 +141,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-saturn',
-          name: 'Сатурн',
+          name: 'Saturn',
           type: 'gas_giant',
           mass: 95,
           distance: 80,
@@ -156,7 +154,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rings: [
             {
               id: 'r-saturn-1',
-              name: 'Кільце B',
+              name: 'Ring B',
               innerRadius: 1.2,
               outerRadius: 1.8,
               color: '#d2c0a5',
@@ -164,7 +162,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
             },
             {
               id: 'r-saturn-2',
-              name: 'Кільце A',
+              name: 'Ring A',
               innerRadius: 1.85,
               outerRadius: 2.2,
               color: '#e5d3b9',
@@ -174,7 +172,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-uranus',
-          name: 'Уран',
+          name: 'Uranus',
           type: 'gas_giant',
           mass: 14.5,
           distance: 110,
@@ -182,12 +180,12 @@ export const useSystemStore = create<SystemStore>((set) => ({
           size: 1.0,
           color: '#4b70dd',
           rotationSpeed: 0.09,
-          axialTilt: 1.71, // Уран лежить на боку (~98 градусів)
+          axialTilt: 1.71,
           orbitalInclination: 0.01,
           rings: [
             {
               id: 'r-uranus-1',
-              name: 'Кільце Епсилон',
+              name: 'Epsilon Ring',
               innerRadius: 1.5,
               outerRadius: 1.55,
               color: '#ffffff',
@@ -197,7 +195,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'p-neptune',
-          name: 'Нептун',
+          name: 'Neptune',
           type: 'gas_giant',
           mass: 17,
           distance: 140,
@@ -212,8 +210,8 @@ export const useSystemStore = create<SystemStore>((set) => ({
       belts: [
         {
           id: 'b-asteroid',
-          name: 'Головний пояс',
-          distance: 38, // Між Марсом і Юпітером
+          name: 'Asteroid Belt',
+          distance: 38,
           width: 6,
           count: 2500,
           speed: 0.06,
@@ -222,20 +220,20 @@ export const useSystemStore = create<SystemStore>((set) => ({
         },
         {
           id: 'b-kuiper',
-          name: 'Пояс Койпера',
-          distance: 160, // За Нептуном
+          name: 'Kuiper Belt',
+          distance: 160,
           width: 20,
           count: 4000,
           speed: 0.01,
           orbitalInclination: 0.1,
-          color: '#445566', // Більш "крижаний" колір
+          color: '#445566',
         },
       ],
     },
     {
       id: 'sys-trappist',
       name: 'TRAPPIST-1',
-      createdAt: new Date().toLocaleDateString('uk-UA'),
+      createdAt: new Date().toLocaleDateString('en-US'),
       star: { name: 'TRAPPIST-1', size: 0.8, color: '#ff3300', mass: 0.09 },
       planets: [
         {
@@ -270,7 +268,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
     {
       id: 'sys-kepler',
       name: 'Kepler-186',
-      createdAt: new Date().toLocaleDateString('uk-UA'),
+      createdAt: new Date().toLocaleDateString('en-US'),
       star: { name: 'Kepler-186', size: 1.5, color: '#ffcc88', mass: 0.5 },
       planets: [
         {
