@@ -1,7 +1,8 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import SolarSystem from '../components/3d/SolarSystem';
+import System from '../components/3d/System';
+import UI from '../components/UI';
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1.2, // Трохи піднімаємо загальну експозицію
           }}>
-          <SolarSystem />
+          <System />
           <OrbitControls
             enableZoom={true}
             enablePan={false}
@@ -29,7 +30,7 @@ export default function Home() {
         </Canvas>
       </div>
 
-      {/* <UI /> */}
+      <UI />
     </div>
   );
 }
