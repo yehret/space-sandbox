@@ -7,7 +7,6 @@ export default function Skydome() {
   const starsRef = useRef<THREE.Points>(null);
   const { camera } = useThree();
 
-  // Примусово рухаємо зірки за позицією камери
   useFrame(() => {
     if (starsRef.current) {
       starsRef.current.position.copy(camera.position);
@@ -20,13 +19,13 @@ export default function Skydome() {
 
       <Stars
         ref={starsRef}
-        radius={100} // Тепер радіус не має значення, бо вони рухаються за камерою
-        depth={50}
-        count={20000}
+        radius={100}
+        depth={150}
+        count={15000}
         factor={4}
         saturation={0}
         fade={true}
-        speed={0}
+        speed={0.2}
       />
     </>
   );

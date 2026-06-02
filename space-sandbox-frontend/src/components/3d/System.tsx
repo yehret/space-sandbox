@@ -1,4 +1,4 @@
-import { Grid } from '@react-three/drei';
+import { Environment, Grid } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { useMemo } from 'react';
 import * as THREE from 'three';
@@ -96,6 +96,7 @@ export default function System() {
         />
       ))}
 
+      <Environment preset="city" />
       {/* 8. Ефекти постпроцесингу: розмитий кінематографічний ореол (Bloom) навколо зірки */}
       <EffectComposer enableNormalPass={false}>
         <Bloom luminanceThreshold={1} mipmapBlur intensity={1} />
