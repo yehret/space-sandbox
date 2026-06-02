@@ -17,7 +17,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
 
   const handleClose = () => {
     onClose();
-    setIsPaused(false);
+    //  setIsPaused(false);
   };
 
   const update = (data: Partial<typeof planet>) => updatePlanet(planet.id, data);

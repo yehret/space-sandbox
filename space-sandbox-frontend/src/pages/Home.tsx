@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import System from '../components/3d/System';
 import { CameraFollower } from '../components/CameraFollower';
+import { ObjectInteraction } from '../components/ObjectInteraction';
 import UI from '../components/UI';
 import { useSystemStore } from '../store/useSystemStore';
 
@@ -26,6 +27,18 @@ function CameraResetter({ controlsRef }: { controlsRef: any }) {
 export default function Home() {
   const controlsRef = useRef<any>(null);
 
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.button === 2) {
+        useSystemStore.getState().setFollowTarget(null);
+      }
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+
+    return () => window.removeEventListener('mousedown', handleMouseDown);
+  }, []);
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white font-sans">
       <div className="absolute inset-0 z-0">
@@ -39,13 +52,13 @@ export default function Home() {
             toneMappingExposure: 0.8,
           }}>
           <System />
+          <ObjectInteraction />
           <OrbitControls
             ref={controlsRef}
             enableZoom={true}
             enablePan={true}
             maxDistance={500}
             minDistance={15}
-            // onStart={() => setFollowTarget(null)}
           />
           <CameraResetter controlsRef={controlsRef} />
           <CameraFollower controlsRef={controlsRef} />

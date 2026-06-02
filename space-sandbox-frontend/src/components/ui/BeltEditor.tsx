@@ -11,7 +11,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
 
   const handleClose = () => {
     onClose();
-    setIsPaused(false);
+    //  setIsPaused(false);
   };
 
   const update = (data: Partial<typeof belt>) => updateBelt(belt.id, data);

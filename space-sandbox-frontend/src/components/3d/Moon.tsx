@@ -51,6 +51,7 @@ export default function Moon({
           gapSize={0.2}
         />
       )}
+
       <mesh ref={moonMeshRef}>
         <sphereGeometry args={[moon.size, 32, 32]} />
         <meshStandardMaterial color={moon.color} roughness={0.8} />

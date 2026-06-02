@@ -19,7 +19,7 @@ export default function StarEditor({ onClose }: { onClose: () => void }) {
 
   const handleClose = () => {
     onClose();
-    setIsPaused(false);
+    //  setIsPaused(false);
   };
 
   const activeClass = STAR_CLASSES.find((c) => c.color === star.color) || STAR_CLASSES[4];

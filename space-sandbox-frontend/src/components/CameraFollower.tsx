@@ -4,8 +4,23 @@ import * as THREE from 'three';
 import { useSystemStore } from '../store/useSystemStore';
 
 export function CameraFollower({ controlsRef }: { controlsRef: any }) {
-  const { followTargetId } = useSystemStore();
+  const { followTargetId, followTargetTrigger } = useSystemStore();
   const lastTargetPos = useRef(new THREE.Vector3());
+  const lastFollowTargetTrigger = useRef(0);
+
+  // Function to reset camera to centered position relative to planet
+  const resetCameraToDefault = (targetPos: THREE.Vector3) => {
+    if (!controlsRef.current) return;
+
+    // Set default offset (distance from planet)
+    const defaultOffset = new THREE.Vector3(10, 5, 10);
+    const newCameraPos = new THREE.Vector3().addVectors(targetPos, defaultOffset);
+
+    // Reset camera position and target
+    controlsRef.current.object.position.copy(newCameraPos);
+    controlsRef.current.target.copy(targetPos);
+    controlsRef.current.update();
+  };
 
   useFrame((state) => {
     if (!followTargetId || !controlsRef.current) return;
@@ -16,20 +31,50 @@ export function CameraFollower({ controlsRef }: { controlsRef: any }) {
     const currentTargetPos = new THREE.Vector3();
     planetMesh.getWorldPosition(currentTargetPos);
 
-    // Розраховуємо дельту (наскільки планета зсунулась за цей кадр)
+    // If target changed or user refocused, reset camera to centered view on planet
+    if (lastFollowTargetTrigger.current !== followTargetTrigger) {
+      resetCameraToDefault(currentTargetPos);
+      lastFollowTargetTrigger.current = followTargetTrigger;
+      lastTargetPos.current.copy(currentTargetPos);
+      return;
+    }
+
+    // Smooth following - apply delta to keep relative distance
     const delta = new THREE.Vector3().subVectors(currentTargetPos, lastTargetPos.current);
 
-    // Зміщуємо камеру на ту саму відстань, на яку зсунулась планета
     state.camera.position.add(delta);
-
-    // Зміщуємо target контролера
     controlsRef.current.target.add(delta);
 
-    // Зберігаємо поточну позицію для наступного кадру
     lastTargetPos.current.copy(currentTargetPos);
-
     controlsRef.current.update();
   });
 
   return null;
 }
+
+// export function CameraFollower({ controlsRef }: { controlsRef: any }) {
+//   const { followTargetId } = useSystemStore();
+//   const lastTargetPos = useRef(new THREE.Vector3());
+
+//   useFrame((state) => {
+//     if (!followTargetId || !controlsRef.current) return;
+
+//     const planetMesh = state.scene.getObjectByName(followTargetId);
+//     if (!planetMesh) return;
+
+//     const currentTargetPos = new THREE.Vector3();
+//     planetMesh.getWorldPosition(currentTargetPos);
+
+//     const delta = new THREE.Vector3().subVectors(currentTargetPos, lastTargetPos.current);
+
+//     state.camera.position.add(delta);
+
+//     controlsRef.current.target.add(delta);
+
+//     lastTargetPos.current.copy(currentTargetPos);
+
+//     controlsRef.current.update();
+//   });
+
+//   return null;
+// }
