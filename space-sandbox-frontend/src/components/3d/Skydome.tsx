@@ -1,18 +1,32 @@
 import { Stars } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
+import { useRef } from 'react';
+import * as THREE from 'three';
 
 export default function Skydome() {
+  const starsRef = useRef<THREE.Points>(null);
+  const { camera } = useThree();
+
+  // Примусово рухаємо зірки за позицією камери
+  useFrame(() => {
+    if (starsRef.current) {
+      starsRef.current.position.copy(camera.position);
+    }
+  });
+
   return (
     <>
-      {/* Замість кулі ми просто заливаємо "пустоту" сцени кольором космосу */}
       <color attach="background" args={['#030308']} />
 
       <Stars
-        radius={100} // Зірки починаються далі від центру
-        depth={300} // І простягаються дуже далеко вглиб
-        count={10000} // Збільшуємо щільність
-        factor={4} // Робимо їх трохи більшими
+        ref={starsRef}
+        radius={100} // Тепер радіус не має значення, бо вони рухаються за камерою
+        depth={50}
+        count={20000}
+        factor={4}
         saturation={0}
-        speed={0.5} // Повільніше мерехтіння виглядає більш природно
+        fade={true}
+        speed={0}
       />
     </>
   );

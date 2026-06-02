@@ -11,12 +11,13 @@ export default function Home() {
       {/* 1. Шар 3D (Фон) - абсолютно спозиційований на задньому плані */}
       <div className="absolute inset-0 z-0">
         <Canvas
-          camera={{ position: [0, 80, 1], fov: 45 }}
+          camera={{ position: [0, 80, 1], fov: 45, far: 5000 }}
           dpr={[1, 2]}
           gl={{
+            logarithmicDepthBuffer: true,
             antialias: true,
-            toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 1.2, // Трохи піднімаємо загальну експозицію
+            toneMapping: THREE.ReinhardToneMapping,
+            toneMappingExposure: 0.8, // Трохи піднімаємо загальну експозицію
           }}>
           <System />
           <OrbitControls
@@ -24,7 +25,7 @@ export default function Home() {
             enablePan={false}
             // autoRotate
             // autoRotateSpeed={0.1}
-            maxDistance={200}
+            maxDistance={500}
             minDistance={15}
           />
         </Canvas>

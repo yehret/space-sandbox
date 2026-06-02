@@ -1,5 +1,5 @@
 import { useSystemStore } from '../../store/useSystemStore';
-import { Slider } from './Slider'; // Перевір правильність шляху до твого компонента Slider
+import { Slider } from './Slider';
 
 export default function BeltEditor({ beltId, onClose }: { beltId: string; onClose: () => void }) {
   const { systems, activeSystemId, updateBelt, removeBelt, setIsPaused } = useSystemStore();

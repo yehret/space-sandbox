@@ -2,7 +2,8 @@ import { Line, Trail } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { MoonData, PlanetaryRingData, useSystemStore } from '../../store/useSystemStore';
+import { useSystemStore } from '../../store/useSystemStore';
+import { MoonData, PlanetaryRingData } from '../../types';
 
 // --- 1. ВИПРАВЛЕНИЙ СУПУТНИК ---
 function Moon({
