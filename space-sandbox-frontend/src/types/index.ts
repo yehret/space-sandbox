@@ -38,9 +38,6 @@ export type PlanetData = {
   color: string;
   textureUrl?: string;
 
-  hasAtmosphere?: boolean;
-  atmosphereColor?: string;
-
   moons?: MoonData[];
   rings?: PlanetaryRingData[];
 };

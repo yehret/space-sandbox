@@ -9,7 +9,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
     .find((s) => s.id === activeSystemId)
     ?.planets.find((p) => p.id === planetId);
 
-  // Стейт для навігації вглиб
+  // State for deep navigation
   const [editingMoonId, setEditingMoonId] = useState<string | null>(null);
   const [editingRingId, setEditingRingId] = useState<string | null>(null);
 
@@ -22,11 +22,11 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
 
   const update = (data: Partial<typeof planet>) => updatePlanet(planet.id, data);
 
-  // --- ЛОГІКА СУПУТНИКІВ ---
+  // --- MOON LOGIC ---
   const handleAddMoon = () => {
     const newMoon: MoonData = {
       id: crypto.randomUUID(),
-      name: 'Новий супутник',
+      name: 'New Moon',
       size: 0.2,
       distance: 2.5,
       speed: 1.5,
@@ -50,11 +50,11 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
 
   const editingMoon = planet.moons?.find((m) => m.id === editingMoonId);
 
-  // --- ЛОГІКА КІЛЕЦЬ ---
+  // --- RING LOGIC ---
   const handleAddRing = () => {
     const newRing: PlanetaryRingData = {
       id: crypto.randomUUID(),
-      name: 'Нове кільце',
+      name: 'New Ring',
       innerRadius: 1.5,
       outerRadius: 2.0,
       color: '#ffffff',
@@ -77,12 +77,12 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
 
   const editingRing = planet.rings?.find((r) => r.id === editingRingId);
 
-  // Конвертери для кутів
+  // Angle converters
   const radToDeg = (rad: number) => (rad * 180) / Math.PI;
   const degToRad = (deg: number) => (deg * Math.PI) / 180;
 
   // ==========================================
-  // РЕНДЕР: МЕНЮ СУПУТНИКА
+  // RENDER: MOON MENU
   // ==========================================
   if (editingMoonId && editingMoon) {
     return (
@@ -92,7 +92,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             <button
               onClick={() => setEditingMoonId(null)}
               className="text-white/50 hover:text-white transition-colors"
-              title="Назад до планети">
+              title="Back to planet">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -102,20 +102,18 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
                 />
               </svg>
             </button>
-            <h2 className="text-lg font-bold">Супутник</h2>
+            <h2 className="text-lg font-bold">Moon</h2>
           </div>
           <button
             onClick={handleClose}
             className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg transition-colors">
-            Готово
+            Done
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
           <div className="flex flex-col gap-2">
-            <label className="text-xs text-white/50 uppercase tracking-wider">
-              Назва супутника
-            </label>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Moon Name</label>
             <input
               type="text"
               value={editingMoon.name}
@@ -125,7 +123,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-xs text-white/50 uppercase tracking-wider">Колір поверхні</label>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Surface Color</label>
             <input
               type="color"
               value={editingMoon.color}
@@ -135,7 +133,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           </div>
 
           <Slider
-            label="Орбіта (Відстань)"
+            label="Orbit (Distance)"
             value={editingMoon.distance}
             min="1"
             max="20"
@@ -144,7 +142,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             onChange={(val) => updateMoon(editingMoon.id, { distance: val })}
           />
           <Slider
-            label="Розмір"
+            label="Size"
             value={editingMoon.size}
             min="0.05"
             max="2"
@@ -153,7 +151,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             onChange={(val) => updateMoon(editingMoon.id, { size: val })}
           />
           <Slider
-            label="Швидкість"
+            label="Speed"
             value={editingMoon.speed}
             min="-5"
             max="5"
@@ -162,7 +160,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             onChange={(val) => updateMoon(editingMoon.id, { speed: val })}
           />
           <Slider
-            label="Нахил орбіти"
+            label="Orbital Inclination"
             value={radToDeg(editingMoon.orbitalInclination)}
             min="-180"
             max="180"
@@ -174,7 +172,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           <button
             onClick={() => removeMoon(editingMoon.id)}
             className="mt-4 py-2 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm">
-            Знищити супутник
+            Destroy Moon
           </button>
         </div>
       </div>
@@ -182,7 +180,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
   }
 
   // ==========================================
-  // РЕНДЕР: МЕНЮ КІЛЬЦЯ
+  // RENDER: RING MENU
   // ==========================================
   if (editingRingId && editingRing) {
     return (
@@ -192,7 +190,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             <button
               onClick={() => setEditingRingId(null)}
               className="text-white/50 hover:text-white transition-colors"
-              title="Назад до планети">
+              title="Back to planet">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -202,18 +200,18 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
                 />
               </svg>
             </button>
-            <h2 className="text-lg font-bold">Кільце</h2>
+            <h2 className="text-lg font-bold">Ring</h2>
           </div>
           <button
             onClick={handleClose}
             className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg transition-colors">
-            Готово
+            Done
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
           <div className="flex flex-col gap-2">
-            <label className="text-xs text-white/50 uppercase tracking-wider">Назва кільця</label>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Ring Name</label>
             <input
               type="text"
               value={editingRing.name}
@@ -222,7 +220,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-xs text-white/50 uppercase tracking-wider">Колір пилу</label>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Dust Color</label>
             <input
               type="color"
               value={editingRing.color}
@@ -232,7 +230,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           </div>
 
           <Slider
-            label="Внутрішній радіус"
+            label="Inner Radius"
             value={editingRing.innerRadius}
             min="1.1"
             max={editingRing.outerRadius - 0.05}
@@ -241,7 +239,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             onChange={(val) => updateRing(editingRing.id, { innerRadius: val })}
           />
           <Slider
-            label="Зовнішній радіус"
+            label="Outer Radius"
             value={editingRing.outerRadius}
             min={editingRing.innerRadius + 0.05}
             max="5"
@@ -250,7 +248,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             onChange={(val) => updateRing(editingRing.id, { outerRadius: val })}
           />
           <Slider
-            label="Густота (Прозорість)"
+            label="Density (Opacity)"
             value={editingRing.opacity}
             min="0.1"
             max="1"
@@ -262,31 +260,27 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           <button
             onClick={() => removeRing(editingRing.id)}
             className="mt-4 py-2 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm">
-            Видалити кільце
+            Delete Ring
           </button>
         </div>
       </div>
     );
   }
 
-  // ==========================================
-  // РЕНДЕР: МЕНЮ ПЛАНЕТИ
-  // ==========================================
   return (
     <>
       <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-        <h2 className="text-lg font-bold">Налаштування планети</h2>
+        <h2 className="text-lg font-bold">Planet Settings</h2>
         <button
           onClick={handleClose}
           className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg transition-colors">
-          Готово
+          Done
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
-        {/* Базові параметри */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-white/50 uppercase tracking-wider">Назва планети</label>
+          <label className="text-xs text-white/50 uppercase tracking-wider">Planet Name</label>
           <input
             type="text"
             value={planet.name}
@@ -296,7 +290,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-white/50 uppercase tracking-wider">Колір атмосфери</label>
+          <label className="text-xs text-white/50 uppercase tracking-wider">Atmosphere Color</label>
           <input
             type="color"
             value={planet.color}
@@ -305,9 +299,49 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           />
         </div>
 
-        {/* Повзунки Планети */}
+        {(() => {
+          const TEXTURE_PRESETS = [
+            { name: 'No Texture (Solid Color)', url: '' },
+            {
+              name: 'Earth (Oceans and Continents)',
+              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
+            },
+            {
+              name: 'Mars (Desert)',
+              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/mars_1k_color.jpg',
+            },
+            {
+              name: 'Jupiter (Gas Bands)',
+              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/jupiter_1k_color.jpg',
+            },
+            {
+              name: 'Moon (Rocky/Craters)',
+              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1k_color.jpg',
+            },
+          ];
+
+          return (
+            <div className="flex flex-col gap-2">
+              <label className="text-xs text-white/50 uppercase tracking-wider">
+                Planet Texture
+              </label>
+              <select
+                value={planet.textureUrl || ''}
+                onChange={(e) => update({ textureUrl: e.target.value || undefined })}
+                className="bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 transition-colors cursor-pointer">
+                {TEXTURE_PRESETS.map((tex) => (
+                  <option key={tex.url} value={tex.url} className="bg-neutral-900 text-white">
+                    {tex.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })()}
+
+        {/* Planet Sliders */}
         <Slider
-          label="Орбіта (Відстань)"
+          label="Orbit (Distance)"
           value={planet.distance}
           min="5"
           max="150"
@@ -317,7 +351,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
         />
 
         <Slider
-          label="Швидкість орбіти"
+          label="Orbital Speed"
           value={planet.speed}
           min="-2"
           max="2"
@@ -326,7 +360,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           onChange={(val) => update({ speed: val })}
         />
         <Slider
-          label="Розмір"
+          label="Size"
           value={planet.size}
           min="0.1"
           max="10"
@@ -335,7 +369,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           onChange={(val) => update({ size: val })}
         />
         <Slider
-          label="Швидкість обертання (Вісь)"
+          label="Rotation Speed"
           value={planet.rotationSpeed}
           min="-0.5"
           max="0.5"
@@ -344,7 +378,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           onChange={(val) => update({ rotationSpeed: val })}
         />
         <Slider
-          label="Нахил орбіти"
+          label="Orbital Inclination"
           value={radToDeg(planet.orbitalInclination)}
           min="-180"
           max="180"
@@ -353,7 +387,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           onChange={(val) => update({ orbitalInclination: degToRad(val) })}
         />
         <Slider
-          label="Нахил осі"
+          label="Axial Tilt"
           value={radToDeg(planet.axialTilt)}
           min="-180"
           max="180"
@@ -362,13 +396,13 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           onChange={(val) => update({ axialTilt: degToRad(val) })}
         />
 
-        {/* --- БЛОК КІЛЕЦЬ --- */}
+        {/* --- RING BLOCK --- */}
         <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
           <div className="flex justify-between items-center">
             <h3 className="text-sm font-bold text-white/80 uppercase tracking-wider">
-              Система кілець
+              Ring System
             </h3>
-            <span className="text-xs text-white/40">{planet.rings?.length || 0} шт.</span>
+            <span className="text-xs text-white/40">{planet.rings?.length || 0} rings</span>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -394,15 +428,15 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           <button
             onClick={handleAddRing}
             className="w-full py-2 bg-white/5 hover:bg-white/10 transition-colors rounded-lg font-medium text-sm border border-white/10 text-orange-200/70">
-            + Додати кільце
+            + Add Ring
           </button>
         </div>
 
-        {/* --- БЛОК СУПУТНИКІВ --- */}
+        {/* --- MOON BLOCK --- */}
         <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
           <div className="flex justify-between items-center">
-            <h3 className="text-sm font-bold text-white/80 uppercase tracking-wider">Супутники</h3>
-            <span className="text-xs text-white/40">{planet.moons?.length || 0} шт.</span>
+            <h3 className="text-sm font-bold text-white/80 uppercase tracking-wider">Moons</h3>
+            <span className="text-xs text-white/40">{planet.moons?.length || 0} moons</span>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -420,7 +454,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           <button
             onClick={handleAddMoon}
             className="w-full py-2 bg-white/5 hover:bg-white/10 transition-colors rounded-lg font-medium text-sm border border-white/10">
-            + Додати супутник
+            + Add Moon
           </button>
         </div>
 
@@ -430,7 +464,7 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             handleClose();
           }}
           className="mt-6 py-2 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm">
-          Знищити планету
+          Delete Planet
         </button>
       </div>
     </>

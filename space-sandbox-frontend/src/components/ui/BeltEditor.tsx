@@ -22,18 +22,18 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
   return (
     <>
       <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-        <h2 className="text-lg font-bold text-gray-300">Налаштування поясу</h2>
+        <h2 className="text-lg font-bold text-gray-300">Belt Settings</h2>
         <button
           onClick={handleClose}
           className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg transition-colors">
-          Готово
+          Done
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
         {/* Назва */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-white/50 uppercase tracking-wider">Назва поясу</label>
+          <label className="text-xs text-white/50 uppercase tracking-wider">Belt Name</label>
           <input
             type="text"
             value={belt.name}
@@ -44,7 +44,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
 
         {/* Колір каменів */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-white/50 uppercase tracking-wider">Колір астероїдів</label>
+          <label className="text-xs text-white/50 uppercase tracking-wider">Asteroid Color</label>
           <input
             type="color"
             value={belt.color}
@@ -55,7 +55,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
 
         {/* Повзунки параметрів */}
         <Slider
-          label="Орбіта (Відстань)"
+          label="Orbit (Distance)"
           value={belt.distance}
           min="10"
           max="200"
@@ -64,7 +64,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           onChange={(val) => update({ distance: val })}
         />
         <Slider
-          label="Ширина кільця"
+          label="Width"
           value={belt.width}
           min="1"
           max="40"
@@ -73,7 +73,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           onChange={(val) => update({ width: val })}
         />
         <Slider
-          label="Кількість астероїдів"
+          label="Asteroid Count"
           value={belt.count}
           min="100"
           max="5000"
@@ -82,7 +82,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           onChange={(val) => update({ count: val })}
         />
         <Slider
-          label="Швидкість орбіти"
+          label="Orbital Speed"
           value={belt.speed}
           min="-1"
           max="1"
@@ -91,7 +91,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           onChange={(val) => update({ speed: val })}
         />
         <Slider
-          label="Нахил орбіти"
+          label="Orbital Inclination"
           value={radToDeg(belt.orbitalInclination)}
           min="-180"
           max="180"
@@ -106,7 +106,7 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
             handleClose();
           }}
           className="mt-4 py-2 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm">
-          Знищити пояс
+          Remove Belt
         </button>
       </div>
     </>

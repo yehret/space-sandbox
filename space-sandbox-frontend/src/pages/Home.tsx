@@ -6,9 +6,7 @@ import UI from '../components/UI';
 
 export default function Home() {
   return (
-    // Головний контейнер на весь екран
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white font-sans">
-      {/* 1. Шар 3D (Фон) - абсолютно спозиційований на задньому плані */}
       <div className="absolute inset-0 z-0">
         <Canvas
           camera={{ position: [0, 80, 1], fov: 45, far: 5000 }}
@@ -17,12 +15,12 @@ export default function Home() {
             logarithmicDepthBuffer: true,
             antialias: true,
             toneMapping: THREE.ReinhardToneMapping,
-            toneMappingExposure: 0.8, // Трохи піднімаємо загальну експозицію
+            toneMappingExposure: 0.8,
           }}>
           <System />
           <OrbitControls
             enableZoom={true}
-            enablePan={false}
+            enablePan={true}
             // autoRotate
             // autoRotateSpeed={0.1}
             maxDistance={500}

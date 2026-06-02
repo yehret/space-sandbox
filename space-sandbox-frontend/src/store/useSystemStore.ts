@@ -1,4 +1,3 @@
-// src/store/useSystemStore.ts
 import { create } from 'zustand';
 import { AsteroidBeltData, PlanetData, SpaceSystem, StarData } from '../types';
 
@@ -19,6 +18,21 @@ interface SystemStore {
   addBelt: (belt: AsteroidBeltData) => void;
   updateBelt: (beltId: string, data: Partial<AsteroidBeltData>) => void;
   removeBelt: (beltId: string) => void;
+
+  showGrid: boolean;
+  showTrails: boolean;
+  showOrbits: boolean;
+  isSidebarOpen: boolean;
+  cameraResetTrigger: number;
+
+  isZenMode: boolean;
+  toggleZenMode: () => void;
+
+  toggleGrid: () => void;
+  toggleTrails: () => void;
+  toggleOrbits: () => void;
+  toggleSidebar: () => void;
+  triggerCameraReset: () => void;
 }
 
 export const useSystemStore = create<SystemStore>((set) => ({
@@ -54,8 +68,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: -0.002, // Венера обертається у зворотний бік!
           axialTilt: 3.1,
           orbitalInclination: 0.06,
-          hasAtmosphere: true,
-          atmosphereColor: '#ffddaa',
         },
         {
           id: 'p-earth',
@@ -69,8 +81,8 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: 0.05,
           axialTilt: 0.4, // Нахил 23.5 градуси в радіанах
           orbitalInclination: 0,
-          hasAtmosphere: true,
-          atmosphereColor: '#55aaff',
+          //  textureUrl:
+          //    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
           moons: [
             {
               id: 'm-moon',
@@ -95,8 +107,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: 0.048,
           axialTilt: 0.43,
           orbitalInclination: 0.03,
-          hasAtmosphere: true,
-          atmosphereColor: '#ffaa55',
         },
         {
           id: 'p-jupiter',
@@ -197,8 +207,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: 0.1,
           axialTilt: 0.5,
           orbitalInclination: 0.03,
-          hasAtmosphere: true,
-          atmosphereColor: '#3366ff',
         },
       ],
       belts: [
@@ -255,8 +263,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: 0.01,
           axialTilt: 0.1,
           orbitalInclination: 0.01,
-          hasAtmosphere: true,
-          atmosphereColor: '#88ccaa',
         },
       ],
       belts: [],
@@ -279,8 +285,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
           rotationSpeed: 0.04,
           axialTilt: 0.3,
           orbitalInclination: 0,
-          hasAtmosphere: true,
-          atmosphereColor: '#ffffff',
         },
       ],
       belts: [],
@@ -289,6 +293,24 @@ export const useSystemStore = create<SystemStore>((set) => ({
   activeSystemId: 'sys-solar',
   isPaused: false,
   timeScale: 1,
+
+  showGrid: true,
+  showTrails: true,
+  showOrbits: true,
+  isSidebarOpen: true,
+  cameraResetTrigger: 0,
+  isZenMode: false,
+  toggleZenMode: () =>
+    set((state) => ({
+      isZenMode: !state.isZenMode,
+      isSidebarOpen: state.isZenMode ? true : false,
+    })),
+
+  toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
+  toggleTrails: () => set((state) => ({ showTrails: !state.showTrails })),
+  toggleOrbits: () => set((state) => ({ showOrbits: !state.showOrbits })),
+  toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+  triggerCameraReset: () => set((state) => ({ cameraResetTrigger: state.cameraResetTrigger + 1 })),
 
   setIsPaused: (paused) => set({ isPaused: paused }),
   setTimeScale: (scale) => set({ timeScale: scale }),

@@ -23,7 +23,7 @@ export const TimeControls = () => {
         <div className="flex justify-between w-full text-xs font-mono text-white/60">
           <span>-25x</span>
           <span className={timeScale === 1 ? 'text-blue-400 font-bold' : 'text-white'}>
-            Час: {timeScale.toFixed(1)}x
+            Time: {timeScale.toFixed(1)}x
           </span>
           <span>25x</span>
         </div>
@@ -41,7 +41,7 @@ export const TimeControls = () => {
       <button
         onClick={() => setTimeScale(1)}
         className="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg">
-        Скинути
+        Reset
       </button>
     </div>
   );
