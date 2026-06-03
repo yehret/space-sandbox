@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { AsteroidBeltData, PlanetData, SpaceSystem, StarData } from '../types';
 
 interface SystemStore {
+  currentUser: { id: string; name: string } | null;
+  login: (username: string) => void;
+  logout: () => void;
+
   systems: SpaceSystem[];
   activeSystemId: string | null;
   isPaused: boolean;
@@ -40,14 +44,32 @@ interface SystemStore {
   toggleOrbits: () => void;
   toggleSidebar: () => void;
   triggerCameraReset: () => void;
+
+  deleteSystem: (id: string) => void;
+  cloneSystem: (id: string) => void;
 }
 
 export const useSystemStore = create<SystemStore>((set) => ({
+  currentUser: { id: 'user-123', name: 'John Doe' },
+
+  login: (username) =>
+    set({
+      currentUser: { id: crypto.randomUUID(), name: username },
+    }),
+
+  logout: () =>
+    set({
+      currentUser: null,
+    }),
+
   systems: [
     {
       id: 'sys-solar',
       name: 'Solar System',
       createdAt: new Date().toLocaleDateString('en-US'),
+      isDefault: true,
+      isPublic: true,
+      authorId: 'user-123',
       star: { name: 'Sun', size: 2.5, color: '#fff4e8', mass: 1 },
       planets: [
         {
@@ -74,7 +96,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
           size: 0.48,
           color: '#e3bb76',
           textureUrl: '/textures/2k_venus_surface.jpg',
-          rotationSpeed: -0.002, // Venus rotates in the opposite direction!
+          rotationSpeed: -0.002,
           axialTilt: 3.1,
           orbitalInclination: 0.06,
         },
@@ -87,6 +109,7 @@ export const useSystemStore = create<SystemStore>((set) => ({
           speed: 0.1,
           size: 0.5,
           color: '#2b82c9',
+          textureUrl: '/textures/2k_earth.jpg',
           rotationSpeed: 0.05,
           axialTilt: 0.4,
           orbitalInclination: 0,
@@ -250,6 +273,9 @@ export const useSystemStore = create<SystemStore>((set) => ({
       id: 'sys-trappist',
       name: 'TRAPPIST-1',
       createdAt: new Date().toLocaleDateString('en-US'),
+      isDefault: true,
+      isPublic: true,
+      authorId: null,
       star: { name: 'TRAPPIST-1', size: 0.8, color: '#ff3300', mass: 0.09 },
       planets: [
         {
@@ -287,6 +313,9 @@ export const useSystemStore = create<SystemStore>((set) => ({
       id: 'sys-kepler',
       name: 'Kepler-186',
       createdAt: new Date().toLocaleDateString('en-US'),
+      isDefault: false,
+      isPublic: true, // Відкрито для ком'юніті
+      authorId: 'user-777', // Належить іншому юзеру
       star: { name: 'Kepler-186', size: 1.5, color: '#ffcc88', mass: 0.5 },
       planets: [
         {
@@ -306,8 +335,19 @@ export const useSystemStore = create<SystemStore>((set) => ({
       ],
       belts: [],
     },
+    {
+      id: 'sys-my-1',
+      name: 'My First Empire',
+      createdAt: new Date().toLocaleDateString('en-US'),
+      isDefault: false,
+      isPublic: false, // Приватна система
+      authorId: 'user-123', // Належить поточному юзеру
+      star: { name: 'Death Star', size: 4, color: '#ff2400', mass: 2 },
+      planets: [],
+      belts: [],
+    },
   ],
-  activeSystemId: 'sys-solar',
+  activeSystemId: null,
   isPaused: false,
   timeScale: 1,
 
@@ -338,12 +378,16 @@ export const useSystemStore = create<SystemStore>((set) => ({
   setIsPaused: (paused) => set({ isPaused: paused }),
   setTimeScale: (scale) => set({ timeScale: scale }),
   setActiveSystem: (id) => set({ activeSystemId: id }),
+
   addSystem: (name) =>
     set((state) => {
       const newSystem: SpaceSystem = {
         id: crypto.randomUUID(),
         name,
         createdAt: new Date().toLocaleDateString('uk-UA'),
+        authorId: state.currentUser?.id || null, // Присвоюємо авторство
+        isDefault: false,
+        isPublic: false,
         star: { name: 'Нова Зірка', size: 1, color: '#ffffff', mass: 1 },
         planets: [],
         belts: [],
@@ -400,4 +444,28 @@ export const useSystemStore = create<SystemStore>((set) => ({
           : sys,
       ),
     })),
+
+  deleteSystem: (id) =>
+    set((state) => ({
+      systems: state.systems.filter((sys) => sys.id !== id),
+    })),
+
+  cloneSystem: (id) =>
+    set((state) => {
+      const sysToClone = state.systems.find((s) => s.id === id);
+      if (!sysToClone) return state;
+
+      // Робимо глибоку копію системи (щоб зміна копії не впливала на оригінал)
+      const newSys: SpaceSystem = structuredClone(sysToClone);
+
+      // Оновлюємо метадані для копії
+      newSys.id = crypto.randomUUID();
+      newSys.name = `${sysToClone.name} (Copy)`;
+      newSys.authorId = state.currentUser?.id || null; // Робимо поточного юзера власником
+      newSys.isDefault = false; // Це вже не базова система
+      newSys.isPublic = false; // За замовчуванням копія приватна
+      newSys.createdAt = new Date().toLocaleDateString('uk-UA');
+
+      return { systems: [...state.systems, newSys] };
+    }),
 }));

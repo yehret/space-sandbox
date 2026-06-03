@@ -37,45 +37,40 @@ export default function PlanetaryRing({ size, ring }: { size: number; ring: Plan
   const inner = size * ring.innerRadius;
   const outer = size * ring.outerRadius;
 
+  const tiltAngle = ring.tiltAngle || 0;
+  const tiltDirection = ring.tiltDirection || 0;
+
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow castShadow>
-      <ringGeometry
-        args={[inner, outer, 64]}
-        onUpdate={(geometry) => {
-          // Ця функція викликається при створенні геометрії.
-          // Вона бере стандартні координати і "закручує" текстуру по колу.
-          const pos = geometry.attributes.position;
-          const uv = geometry.attributes.uv;
+    <group rotation={[0, tiltDirection, 0]}>
+      <group rotation={[tiltAngle, 0, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow castShadow>
+          <ringGeometry
+            args={[inner, outer, 64]}
+            onUpdate={(geometry) => {
+              const pos = geometry.attributes.position;
+              const uv = geometry.attributes.uv;
 
-          for (let i = 0; i < pos.count; i++) {
-            // Беремо X та Y кожної точки кільця
-            const x = pos.getX(i);
-            const y = pos.getY(i);
-
-            // Визначаємо відстань цієї точки від центру
-            const radius = Math.sqrt(x * x + y * y);
-
-            // Перетворюємо цю відстань у відсотки від 0 (внутрішній край) до 1 (зовнішній)
-            const u = (radius - inner) / (outer - inner);
-
-            // Застосовуємо нові координати:
-            // u - розтягує текстуру зліва направо відповідно до радіусу
-            // v - 0.5, беремо середину нашої текстури-смужки
-            uv.setXY(i, u, 0.5);
-          }
-
-          uv.needsUpdate = true;
-        }}
-      />
-      <meshStandardMaterial
-        key={colorMap ? 'textured' : 'solid'}
-        color={colorMap ? '#ffffff' : ring.color}
-        map={colorMap}
-        transparent={true}
-        opacity={ring.opacity}
-        side={THREE.DoubleSide}
-        alphaTest={0.01} // Відсікає повністю прозорі пікселі, щоб тіні падали правильно
-      />
-    </mesh>
+              for (let i = 0; i < pos.count; i++) {
+                const x = pos.getX(i);
+                const y = pos.getY(i);
+                const radius = Math.sqrt(x * x + y * y);
+                const u = (radius - inner) / (outer - inner);
+                uv.setXY(i, u, 0.5);
+              }
+              uv.needsUpdate = true;
+            }}
+          />
+          <meshStandardMaterial
+            key={colorMap ? 'textured' : 'solid'}
+            color={colorMap ? '#ffffff' : ring.color}
+            map={colorMap}
+            transparent={true}
+            opacity={ring.opacity}
+            side={THREE.DoubleSide}
+            alphaTest={0.01}
+          />
+        </mesh>
+      </group>
+    </group>
   );
 }

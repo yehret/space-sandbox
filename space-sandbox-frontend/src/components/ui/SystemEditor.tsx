@@ -9,11 +9,14 @@ export const SystemEditor = ({
   onEditStar: () => void;
   onEditBelt: (id: string) => void;
 }) => {
-  const { systems, activeSystemId, addPlanet, addBelt, setFollowTarget } = useSystemStore();
+  const { currentUser, systems, activeSystemId, addPlanet, addBelt, setFollowTarget } =
+    useSystemStore();
   const activeSystem = systems.find((s) => s.id === activeSystemId);
   const planets = activeSystem?.planets || [];
   const star = activeSystem?.star;
   const belts = activeSystem?.belts || [];
+
+  const isOwner = currentUser !== null && activeSystem?.authorId === currentUser.id;
 
   const handleAddNewPlanet = () => {
     const newId = crypto.randomUUID();
@@ -127,18 +130,20 @@ export const SystemEditor = ({
         ))}
       </div>
 
-      <div className="p-3 lg:p-4 border-t border-white/10 flex gap-2 shrink-0">
-        <button
-          onClick={handleAddNewPlanet}
-          className="flex-1 py-2 lg:py-3 text-sm lg:text-base bg-blue-600 hover:bg-blue-500 transition-colors rounded-xl font-semibold shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-          + Planet
-        </button>
-        <button
-          onClick={handleAddNewBelt}
-          className="flex-1 py-2 lg:py-3 text-sm lg:text-base bg-white/10 hover:bg-white/20 transition-colors rounded-xl font-semibold text-gray-300">
-          + Belt
-        </button>
-      </div>
+      {isOwner && (
+        <div className="p-3 lg:p-4 border-t border-white/10 flex gap-2 shrink-0">
+          <button
+            onClick={handleAddNewPlanet}
+            className="flex-1 py-2 lg:py-3 text-sm lg:text-base bg-blue-600 hover:bg-blue-500 transition-colors rounded-xl font-semibold shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+            + Planet
+          </button>
+          <button
+            onClick={handleAddNewBelt}
+            className="flex-1 py-2 lg:py-3 text-sm lg:text-base bg-white/10 hover:bg-white/20 transition-colors rounded-xl font-semibold text-gray-300">
+            + Belt
+          </button>
+        </div>
+      )}
     </>
   );
 };

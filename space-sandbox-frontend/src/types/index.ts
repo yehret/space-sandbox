@@ -24,6 +24,8 @@ export type PlanetaryRingData = {
   color: string;
   opacity: number;
   textureUrl?: string;
+  tiltAngle?: number;
+  tiltDirection?: number;
 };
 
 export type PlanetData = {
@@ -62,4 +64,8 @@ export type SpaceSystem = {
   star: StarData;
   planets: PlanetData[];
   belts: AsteroidBeltData[];
+
+  authorId?: string | null;
+  isDefault?: boolean;
+  isPublic?: boolean;
 };

@@ -12,13 +12,16 @@ export default function System() {
   const systems = useSystemStore((state) => state.systems);
   const activeSystemId = useSystemStore((state) => state.activeSystemId);
 
-  const activeSystem = systems.find((sys) => sys.id === activeSystemId);
+  const activeSystem =
+    systems.find((sys) => sys.id === activeSystemId) ||
+    systems.find((sys) => sys.id === 'sys-solar');
+
   const planets = activeSystem?.planets || [];
   const belts = activeSystem?.belts || [];
   const star = activeSystem?.star || { size: 3, color: '#FDB813' };
 
   const hdrStarColor = useMemo(() => {
-    return new THREE.Color(star.color).multiplyScalar(10);
+    return new THREE.Color(star.color).multiplyScalar(15);
   }, [star.color]);
 
   return (
@@ -30,7 +33,7 @@ export default function System() {
 
       <pointLight
         position={[0, 0, 0]}
-        intensity={300}
+        intensity={500}
         color={star.color}
         distance={5000}
         decay={1}
