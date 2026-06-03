@@ -60,21 +60,34 @@ export default function Planet({
   }, [initialX, initialZ]);
 
   useEffect(() => {
-    if (textureUrl) {
-      const loader = new THREE.TextureLoader();
-      loader.setCrossOrigin('anonymous');
-      loader.load(
-        textureUrl,
-        (texture) => {
-          texture.colorSpace = THREE.SRGBColorSpace;
-          setColorMap(texture);
-        },
-        undefined,
-        (error) => console.error('Failed to load texture:', error),
-      );
-    } else {
+    // Якщо вибрано "No Texture", скидаємо карту
+    if (!textureUrl) {
       setColorMap(null);
+      return;
     }
+
+    let isActive = true; // Захист від швидкого перемикання (Race condition)
+    const loader = new THREE.TextureLoader();
+
+    loader.load(
+      textureUrl,
+      (texture) => {
+        if (!isActive) return;
+
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true; // 🔥 КРИТИЧНО ВАЖЛИВО! Кажемо відеокарті оновити дані
+
+        setColorMap(texture);
+      },
+      undefined,
+      (error) => {
+        console.error(`❌ Помилка завантаження текстури: ${textureUrl}`, error);
+      },
+    );
+
+    return () => {
+      isActive = false;
+    };
   }, [textureUrl]);
 
   useFrame((_, delta) => {
@@ -133,12 +146,13 @@ export default function Planet({
         )}
 
         <group rotation={[axialTilt, 0, 0]}>
-          <mesh ref={planetMeshRef} name={id}>
-            <sphereGeometry args={[size, 64, 64]} />
+          <mesh ref={planetMeshRef} name={id} castShadow receiveShadow>
+            <sphereGeometry args={[size, 32, 32]} />
             <meshStandardMaterial
+              key={colorMap ? 'textured' : 'solid'}
               color={colorMap ? '#ffffff' : color}
               map={colorMap}
-              roughness={0.7}
+              roughness={0.8}
               metalness={0.1}
             />
           </mesh>

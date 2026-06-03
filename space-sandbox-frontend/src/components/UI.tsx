@@ -34,8 +34,8 @@ export default function UI() {
       <SystemHeader />
 
       <div
-        className={`absolute right-6 top-1/2 -translate-y-1/2 max-w-120 flex flex-col pointer-events-auto bg-[#030308]/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 ${
-          isSidebarOpen ? 'left-8 translate-x-0' : 'left-0 -translate-x-full'
+        className={`absolute right-6 top-1/2 -translate-y-1/2 w-80 lg:w-96 flex flex-col pointer-events-auto bg-[#030308]/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-50 h-[85vh] max-h-[800px] ${
+          isSidebarOpen ? 'left-4 lg:left-8 translate-x-0' : 'left-0 -translate-x-full'
         }`}>
         <div className="flex flex-col h-full overflow-hidden rounded-2xl">
           {uiView === 'list' && (

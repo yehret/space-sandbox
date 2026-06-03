@@ -1,4 +1,4 @@
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Stats } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
@@ -43,11 +43,12 @@ export default function Home() {
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white font-sans">
       <div className="absolute inset-0 z-0">
         <Canvas
+          shadows={{ type: THREE.PCFShadowMap }}
           camera={{ position: [0, 200, 1], fov: 45, far: 5000 }}
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           gl={{
             logarithmicDepthBuffer: true,
-            antialias: true,
+            antialias: false,
             toneMapping: THREE.ReinhardToneMapping,
             toneMappingExposure: 0.8,
           }}>
@@ -62,6 +63,8 @@ export default function Home() {
           />
           <CameraResetter controlsRef={controlsRef} />
           <CameraFollower controlsRef={controlsRef} />
+
+          <Stats showPanel={0} className="stats" />
         </Canvas>
       </div>
 

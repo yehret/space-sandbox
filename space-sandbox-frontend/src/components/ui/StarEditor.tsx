@@ -6,7 +6,7 @@ const STAR_CLASSES = [
   { id: 'B', name: 'Blue', color: '#A5B9FA', desc: '10,000K - 30,000K' },
   { id: 'A', name: 'White', color: '#FFFFFF', desc: '7,500K - 10,000K' },
   { id: 'F', name: 'Yellow-White', color: '#FFF4E8', desc: '6,000K - 7,500K' },
-  { id: 'G', name: 'Yellow Dwarf', color: '#FDB813', desc: '5,200K - 6,000K (Sun)' },
+  { id: 'G', name: 'Yellow Dwarf', color: '#FFD2A1', desc: '5,200K - 6,000K (Sun)' },
   { id: 'K', name: 'Orange', color: '#FF8C00', desc: '3,700K - 5,200K' },
   { id: 'M', name: 'Red Dwarf', color: '#FF2400', desc: '2,400K - 3,700K' },
 ];

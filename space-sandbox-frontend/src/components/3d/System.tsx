@@ -1,11 +1,11 @@
-import { Environment, Grid } from '@react-three/drei';
+import { Grid } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { useSystemStore } from '../../store/useSystemStore';
 import AsteroidBelt from './AsteroidBelt';
 import Planet from './Planet';
-import Skydome from './Skydome';
+import Space from './Space';
 
 export default function System() {
   const showGrid = useSystemStore((state) => state.showGrid);
@@ -17,24 +17,27 @@ export default function System() {
   const belts = activeSystem?.belts || [];
   const star = activeSystem?.star || { size: 3, color: '#FDB813' };
 
-  // Boost star color for bloom effect
   const hdrStarColor = useMemo(() => {
-    return new THREE.Color(star.color).multiplyScalar(5);
+    return new THREE.Color(star.color).multiplyScalar(10);
   }, [star.color]);
 
   return (
     <>
-      <Skydome />
+      <Space />
 
-      <ambientLight intensity={0.5} />
-      <hemisphereLight args={['#4466ff', '#111111', 0.5]} />
+      <ambientLight intensity={0.2} color="#e6f2ff" />
+      <hemisphereLight args={['#4466ff', '#111111', 0.2]} />
 
       <pointLight
         position={[0, 0, 0]}
-        intensity={2000}
+        intensity={300}
         color={star.color}
-        distance={200}
-        decay={2}
+        distance={5000}
+        decay={1}
+        castShadow
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
+        shadow-bias={-0.001}
       />
 
       {showGrid && (
@@ -52,9 +55,10 @@ export default function System() {
       )}
 
       <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[star.size, 64, 64]} />
+        <sphereGeometry args={[star.size, 32, 32]} />
         <meshBasicMaterial color={hdrStarColor} toneMapped={false} />
       </mesh>
+
       {planets.map((planet) => (
         <Planet
           key={planet.id}
@@ -84,9 +88,8 @@ export default function System() {
         />
       ))}
 
-      <Environment preset="city" />
       <EffectComposer enableNormalPass={false}>
-        <Bloom luminanceThreshold={1} mipmapBlur intensity={1} />
+        <Bloom luminanceThreshold={1} luminanceSmoothing={0.9} mipmapBlur intensity={0.8} />
       </EffectComposer>
     </>
   );

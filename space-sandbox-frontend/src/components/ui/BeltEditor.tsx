@@ -31,7 +31,6 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
-        {/* Назва */}
         <div className="flex flex-col gap-2">
           <label className="text-xs text-white/50 uppercase tracking-wider">Belt Name</label>
           <input
@@ -42,7 +41,6 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           />
         </div>
 
-        {/* Колір каменів */}
         <div className="flex flex-col gap-2">
           <label className="text-xs text-white/50 uppercase tracking-wider">Asteroid Color</label>
           <input
@@ -53,7 +51,6 @@ export default function BeltEditor({ beltId, onClose }: { beltId: string; onClos
           />
         </div>
 
-        {/* Повзунки параметрів */}
         <Slider
           label="Orbit (Distance)"
           value={belt.distance}

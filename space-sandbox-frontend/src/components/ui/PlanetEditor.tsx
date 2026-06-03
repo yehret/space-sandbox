@@ -1,7 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSystemStore } from '../../store/useSystemStore';
 import { MoonData, PlanetaryRingData } from '../../types';
 import { Slider } from './Slider';
+
+const TEXTURE_PRESETS = [
+  { name: 'No Texture (Solid Color)', url: '' },
+  { name: 'Mercury', url: '/textures/2k_mercury.jpg' },
+  { name: 'Venus (Surface)', url: '/textures/2k_venus_surface.jpg' },
+  { name: 'Venus (Atmosphere)', url: '/textures/2k_venus_atmosphere.jpg' },
+  { name: 'Earth', url: '/textures/2k_earth.jpg' },
+  { name: 'Mars', url: '/textures/2k_mars.jpg' },
+  { name: 'Jupiter', url: '/textures/2k_jupiter.jpg' },
+  { name: 'Saturn', url: '/textures/2k_saturn.jpg' },
+  { name: 'Uranus', url: '/textures/2k_uranus.jpg' },
+  { name: 'Neptune', url: '/textures/2k_neptune.jpg' },
+  { name: 'Pluto (16k)', url: '/textures/16k_pluto.jpg' },
+  { name: 'Moon', url: '/textures/2k_moon.jpg' },
+  { name: 'Io', url: '/textures/io.jpg' },
+  { name: 'Phobos', url: '/textures/phobos.png' },
+  { name: 'Deimos', url: '/textures/deimos.jpg' },
+  { name: 'Charon', url: '/textures/2k_charon.jpg' },
+  { name: 'Ceres (Fictional)', url: '/textures/2k_ceres_fictional.jpg' },
+  { name: 'Eris (Fictional)', url: '/textures/2k_eris_fictional.jpg' },
+  { name: 'Haumea', url: '/textures/haumea.jpg' },
+  { name: 'Makemake', url: '/textures/2k_makemake_fictional.jpg' },
+  { name: 'TRAPPIST-1d', url: '/textures/2k_trappist1d.jpg' },
+  { name: 'TRAPPIST-1f', url: '/textures/2k_trappist1f.jpg' },
+  { name: 'Proxima b', url: '/textures/proximab.jpg' },
+  { name: 'Laythe', url: '/textures/2k_laythe.jpg' },
+];
+
+const RING_TEXTURE_PRESETS = [
+  { name: 'No Texture (Solid Color)', url: '' },
+  { name: 'Saturn Rings', url: '/textures/2k_saturn_ring_alpha.png' },
+];
 
 export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose: () => void }) => {
   const { systems, activeSystemId, updatePlanet, removePlanet, setIsPaused } = useSystemStore();
@@ -12,6 +44,33 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
   // State for deep navigation
   const [editingMoonId, setEditingMoonId] = useState<string | null>(null);
   const [editingRingId, setEditingRingId] = useState<string | null>(null);
+
+  const [isTextureDropdownOpen, setIsTextureDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isRingTextureDropdownOpen, setIsRingTextureDropdownOpen] = useState(false);
+  const ringDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isMoonTextureDropdownOpen, setIsMoonTextureDropdownOpen] = useState(false);
+  const moonDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsTextureDropdownOpen(false);
+      }
+
+      if (ringDropdownRef.current && !ringDropdownRef.current.contains(event.target as Node)) {
+        setIsRingTextureDropdownOpen(false);
+      }
+
+      if (moonDropdownRef.current && !moonDropdownRef.current.contains(event.target as Node)) {
+        setIsMoonTextureDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!planet) return null;
 
@@ -81,10 +140,15 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
   const radToDeg = (rad: number) => (rad * 180) / Math.PI;
   const degToRad = (deg: number) => (deg * Math.PI) / 180;
 
+  const currentTexture =
+    TEXTURE_PRESETS.find((t) => t.url === (planet.textureUrl || '')) || TEXTURE_PRESETS[0];
+
   // ==========================================
   // RENDER: MOON MENU
   // ==========================================
   if (editingMoonId && editingMoon) {
+    const currentMoonTexture =
+      TEXTURE_PRESETS.find((t) => t.url === (editingMoon.textureUrl || '')) || TEXTURE_PRESETS[0];
     return (
       <div className="flex flex-col h-full">
         <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
@@ -130,6 +194,68 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
               onChange={(e) => updateMoon(editingMoon.id, { color: e.target.value })}
               className="w-full h-10 rounded-lg cursor-pointer bg-transparent border-0"
             />
+          </div>
+
+          <div className="flex flex-col gap-2 relative" ref={moonDropdownRef}>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Moon Texture</label>
+
+            <button
+              onClick={() => setIsMoonTextureDropdownOpen(!isMoonTextureDropdownOpen)}
+              className="w-full bg-black/50 border border-white/10 hover:bg-white/5 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 transition-colors flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {currentMoonTexture.url ? (
+                  <img
+                    src={currentMoonTexture.url}
+                    alt="preview"
+                    className="w-6 h-6 rounded-full object-cover border border-white/20"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20" />
+                )}
+                <span className="text-sm truncate">{currentMoonTexture.name}</span>
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform ${isMoonTextureDropdownOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {isMoonTextureDropdownOpen && (
+              <div className="absolute top-full left-0 w-full mt-1 bg-[#0a0a0f] border border-white/10 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto custom-scrollbar">
+                {TEXTURE_PRESETS.map((tex) => (
+                  <div
+                    key={tex.name}
+                    onClick={() => {
+                      updateMoon(editingMoon.id, { textureUrl: tex.url || undefined });
+                      setIsMoonTextureDropdownOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 hover:bg-white/10 cursor-pointer transition-colors ${
+                      (editingMoon.textureUrl || '') === tex.url ? 'bg-blue-500/20' : ''
+                    }`}>
+                    {tex.url ? (
+                      <img
+                        src={tex.url}
+                        alt=""
+                        className="w-8 h-8 rounded-full object-cover border border-white/20"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                        <span className="text-[10px] text-white/50">N/A</span>
+                      </div>
+                    )}
+                    <span className="text-sm text-white font-medium">{tex.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <Slider
@@ -183,6 +309,9 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
   // RENDER: RING MENU
   // ==========================================
   if (editingRingId && editingRing) {
+    const currentRingTexture =
+      RING_TEXTURE_PRESETS.find((t) => t.url === (editingRing.textureUrl || '')) ||
+      RING_TEXTURE_PRESETS[0];
     return (
       <div className="flex flex-col h-full">
         <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
@@ -229,6 +358,68 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
             />
           </div>
 
+          <div className="flex flex-col gap-2 relative" ref={ringDropdownRef}>
+            <label className="text-xs text-white/50 uppercase tracking-wider">Ring Texture</label>
+
+            <button
+              onClick={() => setIsRingTextureDropdownOpen(!isRingTextureDropdownOpen)}
+              className="w-full bg-black/50 border border-white/10 hover:bg-white/5 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 transition-colors flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {currentRingTexture.url ? (
+                  <img
+                    src={currentRingTexture.url}
+                    alt="preview"
+                    className="w-6 h-6 rounded-full object-cover border border-white/20"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20" />
+                )}
+                <span className="text-sm truncate">{currentRingTexture.name}</span>
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform ${isRingTextureDropdownOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {isRingTextureDropdownOpen && (
+              <div className="absolute top-full left-0 w-full mt-1 bg-[#0a0a0f] border border-white/10 rounded-lg shadow-2xl z-50 overflow-hidden">
+                {RING_TEXTURE_PRESETS.map((tex) => (
+                  <div
+                    key={tex.name}
+                    onClick={() => {
+                      updateRing(editingRing.id, { textureUrl: tex.url || undefined });
+                      setIsRingTextureDropdownOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 hover:bg-white/10 cursor-pointer transition-colors ${
+                      (editingRing.textureUrl || '') === tex.url ? 'bg-blue-500/20' : ''
+                    }`}>
+                    {tex.url ? (
+                      <img
+                        src={tex.url}
+                        alt=""
+                        className="w-8 h-8 rounded-full object-cover border border-white/20"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                        <span className="text-[10px] text-white/50">N/A</span>
+                      </div>
+                    )}
+                    <span className="text-sm text-white font-medium">{tex.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <Slider
             label="Inner Radius"
             value={editingRing.innerRadius}
@@ -270,7 +461,22 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
   return (
     <>
       <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-        <h2 className="text-lg font-bold">Planet Settings</h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleClose}
+            className="text-white/50 hover:text-white transition-colors"
+            title="Back to planet">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <h2 className="text-lg font-bold">Planet Settings</h2>
+        </div>
         <button
           onClick={handleClose}
           className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg transition-colors">
@@ -299,45 +505,69 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
           />
         </div>
 
-        {(() => {
-          const TEXTURE_PRESETS = [
-            { name: 'No Texture (Solid Color)', url: '' },
-            {
-              name: 'Earth (Oceans and Continents)',
-              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
-            },
-            {
-              name: 'Mars (Desert)',
-              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/mars_1k_color.jpg',
-            },
-            {
-              name: 'Jupiter (Gas Bands)',
-              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/jupiter_1k_color.jpg',
-            },
-            {
-              name: 'Moon (Rocky/Craters)',
-              url: 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1k_color.jpg',
-            },
-          ];
+        <div className="flex flex-col gap-2 relative" ref={dropdownRef}>
+          <label className="text-xs text-white/50 uppercase tracking-wider">Planet Texture</label>
 
-          return (
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/50 uppercase tracking-wider">
-                Planet Texture
-              </label>
-              <select
-                value={planet.textureUrl || ''}
-                onChange={(e) => update({ textureUrl: e.target.value || undefined })}
-                className="bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 transition-colors cursor-pointer">
-                {TEXTURE_PRESETS.map((tex) => (
-                  <option key={tex.url} value={tex.url} className="bg-neutral-900 text-white">
-                    {tex.name}
-                  </option>
-                ))}
-              </select>
+          {/* Головна кнопка вибору */}
+          <button
+            onClick={() => setIsTextureDropdownOpen(!isTextureDropdownOpen)}
+            className="w-full bg-black/50 border border-white/10 hover:bg-white/5 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 transition-colors flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {currentTexture.url ? (
+                <img
+                  src={currentTexture.url}
+                  alt="preview"
+                  className="w-6 h-6 rounded-full object-cover border border-white/20"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20" />
+              )}
+              <span className="text-sm truncate">{currentTexture.name}</span>
             </div>
-          );
-        })()}
+            {/* Іконка стрілочки */}
+            <svg
+              className={`w-4 h-4 transition-transform ${isTextureDropdownOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {isTextureDropdownOpen && (
+            <div className="absolute top-full left-0 w-full mt-1 bg-[#0a0a0f] border border-white/10 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto custom-scrollbar">
+              {TEXTURE_PRESETS.map((tex) => (
+                <div
+                  key={tex.name}
+                  onClick={() => {
+                    update({ textureUrl: tex.url || undefined });
+                    setIsTextureDropdownOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-3 py-2 hover:bg-white/10 cursor-pointer transition-colors ${
+                    (planet.textureUrl || '') === tex.url ? 'bg-blue-500/20' : ''
+                  }`}>
+                  {tex.url ? (
+                    <img
+                      src={tex.url}
+                      alt=""
+                      className="w-8 h-8 rounded-full object-cover border border-white/20"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                      <span className="text-[10px] text-white/50">N/A</span>
+                    </div>
+                  )}
+                  <span className="text-sm text-white font-medium">{tex.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Planet Sliders */}
         <Slider

@@ -13,6 +13,7 @@ export type MoonData = {
   speed: number;
   orbitalInclination: number;
   color: string;
+  textureUrl?: string;
 };
 
 export type PlanetaryRingData = {
@@ -22,6 +23,7 @@ export type PlanetaryRingData = {
   outerRadius: number;
   color: string;
   opacity: number;
+  textureUrl?: string;
 };
 
 export type PlanetData = {

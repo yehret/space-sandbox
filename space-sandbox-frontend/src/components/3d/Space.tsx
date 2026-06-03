@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
 import * as THREE from 'three';
 
-export default function Skydome() {
+export default function Space() {
   const starsRef = useRef<THREE.Points>(null);
   const { camera } = useThree();
 
@@ -21,11 +21,11 @@ export default function Skydome() {
         ref={starsRef}
         radius={100}
         depth={150}
-        count={15000}
-        factor={4}
+        count={5000}
+        factor={3}
         saturation={0}
-        fade={true}
-        speed={0.2}
+        fade={false}
+        speed={0}
       />
     </>
   );

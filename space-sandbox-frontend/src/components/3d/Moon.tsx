@@ -1,6 +1,6 @@
 import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useSystemStore } from '../../store/useSystemStore';
 import { MoonData } from '../../types';
@@ -16,8 +16,37 @@ export default function Moon({
 }) {
   const moonMeshRef = useRef<THREE.Mesh>(null);
   const angleRef = useRef(Math.random() * Math.PI * 2);
+  const [colorMap, setColorMap] = useState<THREE.Texture | null>(null);
 
   const showOrbits = useSystemStore((state) => state.showOrbits);
+
+  useEffect(() => {
+    if (!moon.textureUrl) {
+      setColorMap(null);
+      return;
+    }
+
+    let isActive = true;
+    const loader = new THREE.TextureLoader();
+
+    loader.load(
+      moon.textureUrl,
+      (texture) => {
+        if (!isActive) return;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
+        setColorMap(texture);
+      },
+      undefined,
+      (error) => {
+        console.error(`Failed to load moon texture: ${moon.textureUrl}`, error);
+      },
+    );
+
+    return () => {
+      isActive = false;
+    };
+  }, [moon.textureUrl]);
 
   useFrame((_, delta) => {
     if (!moonMeshRef.current || isPaused) return;
@@ -52,9 +81,14 @@ export default function Moon({
         />
       )}
 
-      <mesh ref={moonMeshRef}>
-        <sphereGeometry args={[moon.size, 32, 32]} />
-        <meshStandardMaterial color={moon.color} roughness={0.8} />
+      <mesh ref={moonMeshRef} castShadow receiveShadow>
+        <sphereGeometry args={[moon.size, 16, 16]} />
+        <meshStandardMaterial
+          key={colorMap ? 'textured' : 'solid'}
+          color={colorMap ? '#ffffff' : moon.color}
+          map={colorMap}
+          roughness={0.8}
+        />
       </mesh>
     </group>
   );
