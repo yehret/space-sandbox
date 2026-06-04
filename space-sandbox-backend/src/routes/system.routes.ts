@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  cloneSystem,
   createSystem,
   deleteSystem,
   getSystemById,
@@ -17,6 +18,8 @@ router.get('/:id', authenticateJWT, getSystemById);
 router.post('/', authenticateJWT, createSystem);
 router.delete('/:id', authenticateJWT, deleteSystem);
 router.put('/:id', authenticateJWT, updateSystem);
+
+router.post('/:id/clone', authenticateJWT, cloneSystem);
 
 router.patch('/:id/visibility', authenticateJWT, toggleVisibility);
 

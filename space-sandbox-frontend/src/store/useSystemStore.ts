@@ -103,8 +103,21 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
     }
   },
 
-  cloneSystem: async (id) => {
-    //  await api.post(`/systems/${id}/clone`);
+  cloneSystem: async (id: string) => {
+    try {
+      const response = await api.post(`/systems/${id}/clone`);
+      const clonedSystem = response.data;
+
+      set((state) => ({
+        systems: {
+          ...state.systems,
+          [clonedSystem.id]: clonedSystem,
+        },
+        activeSystemId: clonedSystem.id,
+      }));
+    } catch (error) {
+      console.error('Failed to clone system:', error);
+    }
   },
 
   updateSystemName: (name) =>

@@ -283,3 +283,124 @@ export const toggleVisibility = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ error: 'Failed to update visibility' });
   }
 };
+
+export const cloneSystem = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const id = req.params.id as string;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const originalSystem = await prisma.spaceSystem.findUnique({
+      where: { id },
+      include: {
+        star: true,
+        planets: {
+          include: { moons: true, rings: true },
+        },
+        belts: true,
+      },
+    });
+
+    if (!originalSystem) {
+      res.status(404).json({ error: 'System not found' });
+      return;
+    }
+
+    const systemData: any = {
+      name: `${originalSystem.name} (Copy)`,
+      authorId: userId,
+      isPublic: false,
+      isDefault: false,
+    };
+
+    if (originalSystem.star) {
+      systemData.star = {
+        create: {
+          name: originalSystem.star.name,
+          size: originalSystem.star.size,
+          color: originalSystem.star.color,
+          mass: originalSystem.star.mass,
+        },
+      };
+    }
+
+    if (originalSystem.belts && originalSystem.belts.length > 0) {
+      systemData.belts = {
+        create: originalSystem.belts.map((b) => ({
+          name: b.name,
+          distance: b.distance,
+          width: b.width,
+          count: b.count,
+          speed: b.speed,
+          orbitalInclination: b.orbitalInclination,
+          color: b.color,
+        })),
+      };
+    }
+
+    if (originalSystem.planets && originalSystem.planets.length > 0) {
+      systemData.planets = {
+        create: originalSystem.planets.map((p) => ({
+          name: p.name,
+          type: p.type,
+          mass: p.mass,
+          size: p.size,
+          distance: p.distance,
+          speed: p.speed,
+          orbitalInclination: p.orbitalInclination,
+          rotationSpeed: p.rotationSpeed,
+          axialTilt: p.axialTilt,
+          color: p.color,
+          textureUrl: p.textureUrl,
+          moons:
+            p.moons?.length > 0
+              ? {
+                  create: p.moons.map((m) => ({
+                    name: m.name,
+                    size: m.size,
+                    distance: m.distance,
+                    speed: m.speed,
+                    orbitalInclination: m.orbitalInclination,
+                    color: m.color,
+                    textureUrl: m.textureUrl,
+                  })),
+                }
+              : undefined,
+          rings:
+            p.rings?.length > 0
+              ? {
+                  create: p.rings.map((r) => ({
+                    name: r.name,
+                    innerRadius: r.innerRadius,
+                    outerRadius: r.outerRadius,
+                    color: r.color,
+                    opacity: r.opacity,
+                    textureUrl: r.textureUrl,
+                    tiltAngle: r.tiltAngle,
+                    tiltDirection: r.tiltDirection,
+                  })),
+                }
+              : undefined,
+        })),
+      };
+    }
+
+    const clonedSystem = await prisma.spaceSystem.create({
+      data: systemData,
+      include: {
+        star: true,
+        planets: { include: { moons: true, rings: true } },
+        belts: true,
+      },
+    });
+
+    res.status(201).json(clonedSystem);
+  } catch (error) {
+    console.error('Error cloning system:', error);
+    res.status(500).json({ error: 'Failed to clone system' });
+  }
+};
