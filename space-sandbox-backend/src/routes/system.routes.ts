@@ -13,7 +13,7 @@ import { authenticateJWT } from '../middleware/auth.middleware';
 const router = Router();
 
 router.get('/', getSystems);
-router.get('/:id', authenticateJWT, getSystemById);
+router.get('/:id', getSystemById);
 
 router.post('/', authenticateJWT, createSystem);
 router.delete('/:id', authenticateJWT, deleteSystem);
