@@ -1,0 +1,106 @@
+generator client {
+   provider = "prisma-client-js"
+}
+
+datasource db {
+   provider = "postgresql"
+}
+
+model User {
+   id       String        @id @default(uuid())
+   username String        @unique
+   password String
+   systems  SpaceSystem[]
+}
+
+model SpaceSystem {
+   id        String   @id @default(uuid())
+   name      String
+   createdAt DateTime @default(now())
+
+   isDefault Boolean @default(false)
+   isPublic  Boolean @default(false)
+
+   authorId String?
+   author   User?   @relation(fields: [authorId], references: [id])
+
+   star    Star?
+   planets Planet[]
+   belts   AsteroidBelt[]
+}
+
+model Star {
+   id    String @id @default(uuid())
+   name  String
+   size  Float
+   color String
+   mass  Float
+
+   systemId String      @unique
+   system   SpaceSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+}
+
+model Planet {
+   id                 String  @id @default(uuid())
+   name               String
+   type               String
+   mass               Float
+   size               Float
+   distance           Float
+   speed              Float
+   orbitalInclination Float
+   rotationSpeed      Float
+   axialTilt          Float
+   color              String
+   textureUrl         String?
+
+   systemId String
+   system   SpaceSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+
+   moons Moon[]
+   rings PlanetaryRing[]
+}
+
+model Moon {
+   id                 String  @id @default(uuid())
+   name               String
+   size               Float
+   distance           Float
+   speed              Float
+   orbitalInclination Float
+   color              String
+   textureUrl         String?
+
+   planetId String
+   planet   Planet @relation(fields: [planetId], references: [id], onDelete: Cascade)
+}
+
+model PlanetaryRing {
+   id          String  @id @default(uuid())
+   name        String
+   innerRadius Float
+   outerRadius Float
+   color       String
+   opacity     Float
+   textureUrl  String?
+
+   tiltAngle     Float? @default(0)
+   tiltDirection Float? @default(0)
+
+   planetId String
+   planet   Planet @relation(fields: [planetId], references: [id], onDelete: Cascade)
+}
+
+model AsteroidBelt {
+   id                 String @id @default(uuid())
+   name               String
+   distance           Float
+   width              Float
+   count              Int
+   speed              Float
+   orbitalInclination Float
+   color              String
+
+   systemId String
+   system   SpaceSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+}
