@@ -20,7 +20,12 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 export const prisma = new PrismaClient({ adapter });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.CORS_ORIGIN, 'http://localhost:5173'].filter(Boolean) as string[],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);

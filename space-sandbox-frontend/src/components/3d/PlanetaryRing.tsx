@@ -33,7 +33,6 @@ export default function PlanetaryRing({ size, ring }: { size: number; ring: Plan
     };
   }, [ring.textureUrl]);
 
-  // Заздалегідь вираховуємо фізичні радіуси
   const inner = size * ring.innerRadius;
   const outer = size * ring.outerRadius;
 

@@ -44,7 +44,6 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
 
   const update = (data: Partial<typeof planet>) => updatePlanet(planet.id, data);
 
-  // --- Helpers for Moons ---
   const handleAddMoon = () => {
     const newMoon: MoonData = {
       id: crypto.randomUUID(),
@@ -66,7 +65,6 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
     setEditingMoonId(null);
   };
 
-  // --- Helpers for Rings ---
   const handleAddRing = () => {
     const newRing: PlanetaryRingData = {
       id: crypto.randomUUID(),
@@ -87,7 +85,6 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
     setEditingRingId(null);
   };
 
-  // --- RENDER ORCHESTRATION ---
   const editingMoon = planet.moons?.find((m) => m.id === editingMoonId);
   if (editingMoonId && editingMoon) {
     return (
@@ -116,7 +113,6 @@ export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose:
     );
   }
 
-  // --- MAIN PLANET RENDER ---
   const currentTexture =
     TEXTURE_PRESETS.find((t) => t.url === (planet.textureUrl || '')) || TEXTURE_PRESETS[0];
 

@@ -71,7 +71,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#030308] text-white flex flex-col font-sans selection:bg-blue-500/30">
-      {/* Canvas Background */}
       <div className="fixed inset-0 z-0 opacity-80 pointer-events-none">
         <Canvas
           shadows
@@ -110,14 +109,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Glass Container */}
       <main className="relative z-10 flex-grow flex items-center justify-center p-4 w-full">
-        {/* Фіксована висота контейнера (наприклад, 80% екрану) */}
         <div className="w-full max-w-4xl h-[80vh] bg-[#0a0a10]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl relative flex flex-col overflow-hidden">
-          {/* Subtle light effect */}
           <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
 
-          {/* Tabs (Фіксовані зверху) */}
           <div className="flex justify-center gap-2 mb-8 relative flex-shrink-0">
             {['default', 'community', 'my'].map((tab) => (
               <button
@@ -133,7 +128,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Скролібельна область (Grid) */}
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar relative">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {activeTab === 'my' && !user ? (
@@ -167,7 +161,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Create Button (Фіксований знизу) */}
           <div className="mt-8 flex justify-center border-t border-white/5 pt-8 flex-shrink-0">
             <button
               onClick={handleCreate}
