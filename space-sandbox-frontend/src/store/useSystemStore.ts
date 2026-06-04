@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../api/client';
 import { AsteroidBeltData, PlanetData, SpaceSystem, StarData } from '../types';
-import { useUIStore } from './useUiStore';
+import { useUIStore } from './useUIStore';
 
 interface SystemStore {
   systems: Record<string, SpaceSystem>;

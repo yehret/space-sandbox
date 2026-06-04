@@ -3,7 +3,7 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { useSystemStore } from '../../store/useSystemStore';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 import AsteroidBelt from './AsteroidBelt';
 import Planet from './Planet';
 import Space from './Space';

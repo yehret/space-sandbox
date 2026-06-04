@@ -8,7 +8,7 @@ import { CameraFollower } from '../components/CameraFollower';
 import { ObjectInteraction } from '../components/ObjectInteraction';
 import UI from '../components/UI';
 import { useSystemStore } from '../store/useSystemStore';
-import { useUIStore } from '../store/useUiStore';
+import { useUIStore } from '../store/useUIStore';
 
 function CameraResetter({ controlsRef }: { controlsRef: any }) {
   const cameraResetTrigger = useUIStore((state) => state.cameraResetTrigger);
