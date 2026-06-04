@@ -3,18 +3,19 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { useSystemStore } from '../../store/useSystemStore';
+import { useUIStore } from '../../store/useUiStore';
 import AsteroidBelt from './AsteroidBelt';
 import Planet from './Planet';
 import Space from './Space';
 
 export default function System() {
-  const showGrid = useSystemStore((state) => state.showGrid);
+  const showGrid = useUIStore((state) => state.showGrid);
   const systems = useSystemStore((state) => state.systems);
   const activeSystemId = useSystemStore((state) => state.activeSystemId);
 
   const activeSystem =
-    systems.find((sys) => sys.id === activeSystemId) ||
-    systems.find((sys) => sys.id === 'sys-solar');
+    (activeSystemId && systems[activeSystemId]) ||
+    Object.values(systems).find((sys) => sys.name === 'Solar System');
 
   const planets = activeSystem?.planets || [];
   const belts = activeSystem?.belts || [];

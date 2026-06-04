@@ -2,12 +2,12 @@ import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useSystemStore } from '../store/useSystemStore';
+import { useUIStore } from '../store/useUiStore';
 
 export function ObjectInteraction() {
-  const setFollowTarget = useSystemStore((state) => state.setFollowTarget);
-  const setHoveredObject = useSystemStore((state) => state.setHoveredObject);
-  const hoveredObjectId = useSystemStore((state) => state.hoveredObjectId);
+  const setFollowTarget = useUIStore((state) => state.setFollowTarget);
+  const setHoveredObject = useUIStore((state) => state.setHoveredObject);
+  const hoveredObjectId = useUIStore((state) => state.hoveredObjectId);
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
 

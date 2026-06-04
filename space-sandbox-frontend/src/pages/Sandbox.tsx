@@ -1,6 +1,6 @@
 import { Loader, OrbitControls, Stats } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import * as THREE from 'three';
 import System from '../components/3d/System';
@@ -8,9 +8,10 @@ import { CameraFollower } from '../components/CameraFollower';
 import { ObjectInteraction } from '../components/ObjectInteraction';
 import UI from '../components/UI';
 import { useSystemStore } from '../store/useSystemStore';
+import { useUIStore } from '../store/useUiStore';
 
 function CameraResetter({ controlsRef }: { controlsRef: any }) {
-  const cameraResetTrigger = useSystemStore((state) => state.cameraResetTrigger);
+  const cameraResetTrigger = useUIStore((state) => state.cameraResetTrigger);
 
   useEffect(() => {
     if (controlsRef.current) {
@@ -28,18 +29,20 @@ function CameraResetter({ controlsRef }: { controlsRef: any }) {
 export default function Sandbox() {
   const controlsRef = useRef<any>(null);
   const { id } = useParams<{ id: string }>();
-  const setActiveSystem = useSystemStore((state) => state.setActiveSystem);
+  const fetchSystemById = useSystemStore((state) => state.fetchSystemById);
+  const isLoading = useSystemStore((state) => state.isLoading);
+  const activeSystemId = useSystemStore((state) => state.activeSystemId);
 
   useEffect(() => {
     if (id) {
-      setActiveSystem(id);
+      fetchSystemById(id);
     }
-  }, [id, setActiveSystem]);
+  }, [id, fetchSystemById]);
 
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button === 2) {
-        useSystemStore.getState().setFollowTarget(null);
+        useUIStore.getState().setFollowTarget(null);
       }
     };
 
@@ -47,6 +50,14 @@ export default function Sandbox() {
 
     return () => window.removeEventListener('mousedown', handleMouseDown);
   }, []);
+
+  if (isLoading || !activeSystemId) {
+    return (
+      <div className="flex items-center justify-center w-screen h-screen bg-black text-white">
+        <div className="text-xl animate-pulse">Loading Universe...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white font-sans">
@@ -61,19 +72,21 @@ export default function Sandbox() {
             toneMapping: THREE.ReinhardToneMapping,
             toneMappingExposure: 0.8,
           }}>
-          <System />
-          <ObjectInteraction />
-          <OrbitControls
-            ref={controlsRef}
-            enableZoom={true}
-            enablePan={true}
-            maxDistance={500}
-            minDistance={15}
-          />
-          <CameraResetter controlsRef={controlsRef} />
-          <CameraFollower controlsRef={controlsRef} />
+          <Suspense fallback={null}>
+            <System />
+            <ObjectInteraction />
+            <OrbitControls
+              ref={controlsRef}
+              enableZoom={true}
+              enablePan={true}
+              maxDistance={500}
+              minDistance={15}
+            />
+            <CameraResetter controlsRef={controlsRef} />
+            <CameraFollower controlsRef={controlsRef} />
 
-          <Stats showPanel={0} className="stats" />
+            <Stats showPanel={0} className="stats" />
+          </Suspense>
         </Canvas>
       </div>
 

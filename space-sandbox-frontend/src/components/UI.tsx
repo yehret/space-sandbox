@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSystemStore } from '../store/useSystemStore';
+import { useUIStore } from '../store/useUiStore';
 import BeltEditor from './ui/BeltEditor';
 import { PlanetEditor } from './ui/PlanetEditor';
 import StarEditor from './ui/StarEditor';
@@ -14,10 +14,10 @@ export default function UI() {
   const [editingPlanetId, setEditingPlanetId] = useState<string | null>(null);
   const [editingBeltId, setEditingBeltId] = useState<string | null>(null);
 
-  const isSidebarOpen = useSystemStore((state) => state.isSidebarOpen);
-  const toggleSidebar = useSystemStore((state) => state.toggleSidebar);
-
-  const { isZenMode, toggleZenMode } = useSystemStore();
+  const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const isZenMode = useUIStore((state) => state.isZenMode);
+  const toggleZenMode = useUIStore((state) => state.toggleZenMode);
 
   if (isZenMode) {
     return (

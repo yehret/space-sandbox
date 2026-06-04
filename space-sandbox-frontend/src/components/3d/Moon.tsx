@@ -2,7 +2,7 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useSystemStore } from '../../store/useSystemStore';
+import { useUIStore } from '../../store/useUiStore';
 import { MoonData } from '../../types';
 
 export default function Moon({
@@ -18,7 +18,7 @@ export default function Moon({
   const angleRef = useRef(Math.random() * Math.PI * 2);
   const [colorMap, setColorMap] = useState<THREE.Texture | null>(null);
 
-  const showOrbits = useSystemStore((state) => state.showOrbits);
+  const showOrbits = useUIStore((state) => state.showOrbits);
 
   useEffect(() => {
     if (!moon.textureUrl) {

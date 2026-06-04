@@ -1,5 +1,7 @@
+import { useShallow } from 'zustand/shallow';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useSystemStore } from '../../store/useSystemStore';
+import { useUIStore } from '../../store/useUiStore';
 
 export const SystemEditor = ({
   onEditPlanet,
@@ -10,15 +12,23 @@ export const SystemEditor = ({
   onEditStar: () => void;
   onEditBelt: (id: string) => void;
 }) => {
-  const { systems, activeSystemId, addPlanet, addBelt, setFollowTarget } = useSystemStore();
+  const { systems, activeSystemId, addPlanet, addBelt } = useSystemStore(
+    useShallow((state) => ({
+      systems: state.systems,
+      activeSystemId: state.activeSystemId,
+      addPlanet: state.addPlanet,
+      addBelt: state.addBelt,
+    })),
+  );
+  const setFollowTarget = useUIStore((state) => state.setFollowTarget);
 
   const { user } = useAuthStore();
-  const activeSystem = systems.find((s) => s.id === activeSystemId);
+  const activeSystem = activeSystemId ? systems[activeSystemId] : null;
   const planets = activeSystem?.planets || [];
   const star = activeSystem?.star;
   const belts = activeSystem?.belts || [];
 
-   const isOwner = user !== null && activeSystem?.authorId === user.id;
+  const isOwner = user !== null && activeSystem?.authorId === user.id;
 
   const handleAddNewPlanet = () => {
     const newId = crypto.randomUUID();

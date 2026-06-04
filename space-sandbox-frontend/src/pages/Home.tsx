@@ -2,6 +2,7 @@ import { Loader } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/shallow';
 import System from '../components/3d/System';
 import AuthModal from '../components/ui/AuthModal';
 import { SystemCard } from '../components/ui/SystemCard';
@@ -11,7 +12,15 @@ import { useSystemStore } from '../store/useSystemStore';
 export default function Home() {
   const navigate = useNavigate();
 
-  const { systems, createSystem, deleteSystem, cloneSystem, fetchSystems } = useSystemStore();
+  const { systems, createSystem, deleteSystem, cloneSystem, fetchSystems } = useSystemStore(
+    useShallow((state) => ({
+      systems: state.systems,
+      createSystem: state.createSystem,
+      deleteSystem: state.deleteSystem,
+      cloneSystem: state.cloneSystem,
+      fetchSystems: state.fetchSystems,
+    })),
+  );
   const { user, logout } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<'default' | 'community' | 'my'>('default');
@@ -21,7 +30,8 @@ export default function Home() {
     fetchSystems();
   }, [fetchSystems, user]);
 
-  const filteredSystems = systems.filter((sys) => {
+  const systemsArray = Object.values(systems);
+  const filteredSystems = systemsArray.filter((sys) => {
     if (activeTab === 'default') return sys.isDefault;
     if (activeTab === 'community') return sys.isPublic && !sys.isDefault;
     if (activeTab === 'my') return sys.authorId === user?.id;
@@ -37,7 +47,7 @@ export default function Home() {
       setIsAuthModalOpen(true);
       return;
     }
-    const newName = `New System ${systems.length + 1}`;
+    const newName = `New System ${systemsArray.length + 1}`;
     await createSystem(newName);
     setActiveTab('my');
   };

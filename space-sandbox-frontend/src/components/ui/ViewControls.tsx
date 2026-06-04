@@ -1,4 +1,5 @@
-import { useSystemStore } from '../../store/useSystemStore';
+import { useShallow } from 'zustand/shallow';
+import { useUIStore } from '../../store/useUiStore';
 
 export default function ViewControls() {
   const {
@@ -11,7 +12,19 @@ export default function ViewControls() {
     triggerCameraReset,
     followTargetId,
     setFollowTarget,
-  } = useSystemStore();
+  } = useUIStore(
+    useShallow((state) => ({
+      showGrid: state.showGrid,
+      toggleGrid: state.toggleGrid,
+      showTrails: state.showTrails,
+      toggleTrails: state.toggleTrails,
+      showOrbits: state.showOrbits,
+      toggleOrbits: state.toggleOrbits,
+      triggerCameraReset: state.triggerCameraReset,
+      followTargetId: state.followTargetId,
+      setFollowTarget: state.setFollowTarget,
+    })),
+  );
 
   const buttons = [
     { label: 'Grid', active: showGrid, onClick: toggleGrid },

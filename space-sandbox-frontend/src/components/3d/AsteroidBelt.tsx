@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useSystemStore } from '../../store/useSystemStore';
+import { useUIStore } from '../../store/useUiStore';
 
 type AsteroidBeltProps = {
   distance: number;
@@ -22,8 +22,8 @@ export default function AsteroidBelt({
 }: AsteroidBeltProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const angleRef = useRef(0);
-  const { isPaused, timeScale } = useSystemStore();
-
+  const isPaused = useUIStore((state) => state.isPaused);
+  const timeScale = useUIStore((state) => state.timeScale);
   useEffect(() => {
     if (!meshRef.current) return;
 
@@ -36,7 +36,11 @@ export default function AsteroidBelt({
 
       dummy.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
       dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-      dummy.scale.set(Math.random() * 0.13 + 0.02, Math.random() * 0.13 + 0.02, Math.random() * 0.13 + 0.02);
+      dummy.scale.set(
+        Math.random() * 0.13 + 0.02,
+        Math.random() * 0.13 + 0.02,
+        Math.random() * 0.13 + 0.02,
+      );
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
     }

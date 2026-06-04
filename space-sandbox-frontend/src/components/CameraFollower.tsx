@@ -1,10 +1,11 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import * as THREE from 'three';
-import { useSystemStore } from '../store/useSystemStore';
+import { useUIStore } from '../store/useUiStore';
 
 export function CameraFollower({ controlsRef }: { controlsRef: any }) {
-  const { followTargetId, followTargetTrigger } = useSystemStore();
+  const followTargetId = useUIStore((state) => state.followTargetId);
+  const followTargetTrigger = useUIStore((state) => state.followTargetTrigger);
   const lastTargetPos = useRef(new THREE.Vector3());
   const lastFollowTargetTrigger = useRef(0);
 

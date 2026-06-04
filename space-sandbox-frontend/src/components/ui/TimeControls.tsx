@@ -1,7 +1,15 @@
-import { useSystemStore } from '../../store/useSystemStore';
+import { useShallow } from 'zustand/shallow';
+import { useUIStore } from '../../store/useUiStore';
 
 export const TimeControls = () => {
-  const { isPaused, setIsPaused, timeScale, setTimeScale } = useSystemStore();
+  const { isPaused, setIsPaused, timeScale, setTimeScale } = useUIStore(
+    useShallow((state) => ({
+      isPaused: state.isPaused,
+      setIsPaused: state.setIsPaused,
+      timeScale: state.timeScale,
+      setTimeScale: state.setTimeScale,
+    })),
+  );
 
   return (
     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 pointer-events-auto bg-[#030308]/80 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">

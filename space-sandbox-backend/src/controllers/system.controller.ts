@@ -3,12 +3,7 @@ import { prisma } from '../index';
 
 export const getSystems = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
-
     const systems = await prisma.spaceSystem.findMany({
-      where: {
-        OR: [{ isPublic: true }, { isDefault: true }, { authorId: userId || 'unauthenticated' }],
-      },
       include: {
         author: { select: { username: true } },
         star: true,

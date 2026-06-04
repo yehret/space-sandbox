@@ -2,7 +2,7 @@ import { Line, Trail } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useSystemStore } from '../../store/useSystemStore';
+import { useUIStore } from '../../store/useUiStore';
 import { MoonData, PlanetaryRingData } from '../../types';
 import Moon from './Moon';
 import PlanetaryRing from './PlanetaryRing';
@@ -42,10 +42,10 @@ export default function Planet({
   const initialAngle = useMemo(() => Math.random() * Math.PI * 2, []);
   const angleRef = useRef(initialAngle);
 
-  const isPaused = useSystemStore((state) => state.isPaused);
-  const timeScale = useSystemStore((state) => state.timeScale);
-  const showOrbits = useSystemStore((state) => state.showOrbits);
-  const showTrails = useSystemStore((state) => state.showTrails);
+  const isPaused = useUIStore((state) => state.isPaused);
+  const timeScale = useUIStore((state) => state.timeScale);
+  const showOrbits = useUIStore((state) => state.showOrbits);
+  const showTrails = useUIStore((state) => state.showTrails);
 
   const initialX = Math.cos(initialAngle) * distance;
   const initialZ = Math.sin(initialAngle) * distance;
@@ -115,7 +115,7 @@ export default function Planet({
       {showOrbits && (
         <Line
           points={planetOrbitPoints}
-          color={color}
+          color={color || '#ffffff'}
           transparent
           opacity={0.15}
           dashed

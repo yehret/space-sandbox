@@ -11,7 +11,7 @@ import { authenticateJWT } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.get('/', authenticateJWT, getSystems);
+router.get('/', getSystems);
 router.get('/:id', authenticateJWT, getSystemById);
 
 router.post('/', authenticateJWT, createSystem);

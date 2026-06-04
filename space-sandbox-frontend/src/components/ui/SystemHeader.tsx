@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/shallow';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useSystemStore } from '../../store/useSystemStore';
 
@@ -7,10 +8,18 @@ export const SystemHeader = () => {
   const navigate = useNavigate();
 
   const { systems, activeSystemId, saveActiveSystem, toggleSystemVisibility, updateSystemName } =
-    useSystemStore();
+    useSystemStore(
+      useShallow((state) => ({
+        systems: state.systems,
+        activeSystemId: state.activeSystemId,
+        saveActiveSystem: state.saveActiveSystem,
+        toggleSystemVisibility: state.toggleSystemVisibility,
+        updateSystemName: state.updateSystemName,
+      })),
+    );
   const { user } = useAuthStore();
 
-  const activeSystem = systems.find((s) => s.id === activeSystemId);
+  const activeSystem = activeSystemId ? systems[activeSystemId] : null;
   const isOwner = user !== null && activeSystem?.authorId === user.id;
 
   const [isSaving, setIsSaving] = useState(false);

@@ -1,11 +1,11 @@
+import 'dotenv/config';
+
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
-import pg from 'pg';
+import { Pool } from 'pg';
 
-const connectionString = process.env.DATABASE_URL!;
-
-const pool = new pg.Pool({
-  connectionString,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
 const adapter = new PrismaPg(pool);
@@ -15,311 +15,574 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  console.log('Seeding started...');
+
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},
-    create: {
-      username: 'admin',
-      password: 'hashed_password_placeholder',
-    },
+    create: { username: 'admin', password: 'hashed_password_placeholder' },
   });
 
-  // Видаляємо старі дефолтні системи
-  await prisma.spaceSystem.deleteMany({
-    where: {
-      isDefault: true,
-    },
-  });
+  await prisma.spaceSystem.deleteMany({});
 
-  // =====================================
-  // SOLAR SYSTEM
-  // =====================================
-
-  await prisma.spaceSystem.create({
-    data: {
+  const systems = [
+    {
       name: 'Solar System',
       isDefault: true,
       isPublic: true,
       authorId: admin.id,
-
-      star: {
-        create: {
-          name: 'Sun',
-          size: 2.5,
-          color: '#fff4e8',
-          mass: 1,
+      star: { name: 'Sun', size: 2.5, color: '#fff4e8', mass: 1 },
+      planets: [
+        {
+          name: 'Mercury',
+          type: 'terrestrial',
+          mass: 0.055,
+          distance: 8,
+          speed: 0.16,
+          size: 0.2,
+          color: '#8c8c8c',
+          textureUrl: '/textures/2k_mercury.jpg',
+          rotationSpeed: 0.005,
+          axialTilt: 0.03,
+          orbitalInclination: 0.12,
         },
-      },
-
-      planets: {
-        create: [
-          {
-            name: 'Mercury',
-            type: 'terrestrial',
-            mass: 0.055,
-            size: 0.19,
-            distance: 8,
-            speed: 0.16,
-            orbitalInclination: 7,
-            rotationSpeed: 0.01,
-            axialTilt: 0.03,
-            color: '#a8a8a8',
-          },
-
-          {
-            name: 'Venus',
-            type: 'terrestrial',
-            mass: 0.815,
-            size: 0.47,
-            distance: 14,
-            speed: 0.12,
-            orbitalInclination: 3.4,
-            rotationSpeed: -0.004,
-            axialTilt: 177,
-            color: '#e8c27a',
-          },
-
-          {
-            name: 'Earth',
-            type: 'terrestrial',
-            mass: 1,
-            size: 0.5,
-            distance: 20,
-            speed: 0.1,
-            orbitalInclination: 0,
-            rotationSpeed: 1,
-            axialTilt: 23.4,
-            color: '#2b82c9',
-
-            moons: {
-              create: [
-                {
-                  name: 'Moon',
-                  size: 0.15,
-                  distance: 1.5,
-                  speed: 1.2,
-                  orbitalInclination: 5.1,
-                  color: '#aaaaaa',
-                },
-              ],
+        {
+          name: 'Venus',
+          type: 'terrestrial',
+          mass: 0.81,
+          distance: 14,
+          speed: 0.12,
+          size: 0.48,
+          color: '#e3bb76',
+          textureUrl: '/textures/2k_venus_surface.jpg',
+          rotationSpeed: -0.002,
+          axialTilt: 3.1,
+          orbitalInclination: 0.06,
+        },
+        {
+          name: 'Earth',
+          type: 'terrestrial',
+          mass: 1,
+          distance: 20,
+          speed: 0.1,
+          size: 0.5,
+          color: '#2b82c9',
+          textureUrl: '/textures/2k_earth.jpg',
+          rotationSpeed: 0.05,
+          axialTilt: 0.4,
+          orbitalInclination: 0,
+          moons: [
+            {
+              name: 'Moon',
+              size: 0.15,
+              distance: 1.5,
+              speed: 1.2,
+              orbitalInclination: 0.1,
+              color: '#aaaaaa',
+              textureUrl: '/textures/2k_moon.jpg',
             },
-          },
-
-          {
-            name: 'Mars',
-            type: 'terrestrial',
-            mass: 0.107,
-            size: 0.27,
-            distance: 28,
-            speed: 0.08,
-            orbitalInclination: 1.85,
-            rotationSpeed: 0.97,
-            axialTilt: 25.2,
-            color: '#c1440e',
-
-            moons: {
-              create: [
-                {
-                  name: 'Phobos',
-                  size: 0.05,
-                  distance: 0.6,
-                  speed: 2,
-                  orbitalInclination: 1,
-                  color: '#999999',
-                },
-                {
-                  name: 'Deimos',
-                  size: 0.03,
-                  distance: 1,
-                  speed: 1.3,
-                  orbitalInclination: 1.8,
-                  color: '#bbbbbb',
-                },
-              ],
+          ],
+        },
+        {
+          name: 'Mars',
+          type: 'terrestrial',
+          mass: 0.1,
+          distance: 28,
+          speed: 0.08,
+          size: 0.35,
+          color: '#c1440e',
+          textureUrl: '/textures/2k_mars.jpg',
+          rotationSpeed: 0.048,
+          axialTilt: 0.43,
+          orbitalInclination: 0.03,
+        },
+        {
+          name: 'Jupiter',
+          type: 'gas_giant',
+          mass: 317,
+          distance: 55,
+          speed: 0.04,
+          size: 1.6,
+          color: '#d39c7e',
+          textureUrl: '/textures/2k_jupiter.jpg',
+          rotationSpeed: 0.12,
+          axialTilt: 0.05,
+          orbitalInclination: 0.02,
+          moons: [
+            {
+              name: 'Io',
+              size: 0.12,
+              distance: 2.5,
+              speed: 2.5,
+              orbitalInclination: 0,
+              textureUrl: '/textures/io.jpg',
+              color: '#ffffaa',
             },
-          },
-
-          {
-            name: 'Jupiter',
-            type: 'gas_giant',
-            mass: 317,
-            size: 1.6,
-            distance: 55,
-            speed: 0.04,
-            orbitalInclination: 1.3,
-            rotationSpeed: 2.4,
-            axialTilt: 3.1,
-            color: '#d39c7e',
-
-            rings: {
-              create: [
-                {
-                  name: 'Main Ring',
-                  innerRadius: 1.8,
-                  outerRadius: 2.1,
-                  color: '#cfa27d',
-                  opacity: 0.3,
-                },
-              ],
+            {
+              name: 'Europa',
+              size: 0.1,
+              distance: 3.5,
+              speed: 1.8,
+              orbitalInclination: 0,
+              color: '#ffffff',
             },
-          },
-
-          {
-            name: 'Saturn',
-            type: 'gas_giant',
-            mass: 95,
-            size: 1.4,
-            distance: 80,
-            speed: 0.03,
-            orbitalInclination: 2.5,
-            rotationSpeed: 2.2,
-            axialTilt: 26.7,
-            color: '#e7d3a8',
-
-            rings: {
-              create: [
-                {
-                  name: 'Saturn Main Rings',
-                  innerRadius: 1.8,
-                  outerRadius: 3.5,
-                  color: '#e8dfc8',
-                  opacity: 0.8,
-                },
-              ],
+          ],
+        },
+        {
+          name: 'Saturn',
+          type: 'gas_giant',
+          mass: 95,
+          distance: 80,
+          speed: 0.03,
+          size: 1.3,
+          color: '#ead6b8',
+          textureUrl: '/textures/2k_saturn.jpg',
+          rotationSpeed: 0.11,
+          axialTilt: 0.46,
+          orbitalInclination: 0.04,
+          rings: [
+            { name: 'Ring B', innerRadius: 1.2, outerRadius: 1.8, color: '#d2c0a5', opacity: 0.8 },
+            { name: 'Ring A', innerRadius: 1.85, outerRadius: 2.2, color: '#e5d3b9', opacity: 0.5 },
+          ],
+        },
+        {
+          name: 'Uranus',
+          type: 'gas_giant',
+          mass: 14.5,
+          distance: 110,
+          speed: 0.02,
+          size: 1.0,
+          color: '#4b70dd',
+          textureUrl: '/textures/2k_uranus.jpg',
+          rotationSpeed: 0.09,
+          axialTilt: 1.71,
+          orbitalInclination: 0.01,
+          rings: [
+            {
+              name: 'Epsilon Ring',
+              innerRadius: 1.5,
+              outerRadius: 1.55,
+              color: '#ffffff',
+              opacity: 0.2,
             },
-          },
-
-          {
-            name: 'Uranus',
-            type: 'ice_giant',
-            mass: 14.5,
-            size: 1.0,
-            distance: 105,
-            speed: 0.02,
-            orbitalInclination: 0.77,
-            rotationSpeed: -1.4,
-            axialTilt: 98,
-            color: '#8fd8f0',
-          },
-
-          {
-            name: 'Neptune',
-            type: 'ice_giant',
-            mass: 17,
-            size: 0.98,
-            distance: 125,
-            speed: 0.018,
-            orbitalInclination: 1.77,
-            rotationSpeed: 1.5,
-            axialTilt: 28.3,
-            color: '#3c63ff',
-          },
-        ],
-      },
-
-      belts: {
-        create: [
-          {
-            name: 'Main Asteroid Belt',
-            distance: 40,
-            width: 12,
-            count: 5000,
-            speed: 0.06,
-            orbitalInclination: 10,
-            color: '#777777',
-          },
-        ],
-      },
+          ],
+        },
+        {
+          name: 'Neptune',
+          type: 'gas_giant',
+          mass: 17,
+          distance: 140,
+          speed: 0.015,
+          size: 0.95,
+          color: '#274687',
+          textureUrl: '/textures/2k_neptune.jpg',
+          rotationSpeed: 0.1,
+          axialTilt: 0.5,
+          orbitalInclination: 0.03,
+        },
+      ],
+      belts: [
+        {
+          name: 'Asteroid Belt',
+          distance: 38,
+          width: 6,
+          count: 2500,
+          speed: 0.06,
+          orbitalInclination: 0.05,
+          color: '#665544',
+        },
+        {
+          name: 'Kuiper Belt',
+          distance: 160,
+          width: 20,
+          count: 4000,
+          speed: 0.01,
+          orbitalInclination: 0.1,
+          color: '#445566',
+        },
+      ],
     },
-  });
-
-  // =====================================
-  // ALPHA CENTAURI SYSTEM
-  // =====================================
-
-  await prisma.spaceSystem.create({
-    data: {
-      name: 'Alpha Centauri System',
+    {
+      name: 'TRAPPIST-1',
       isDefault: true,
       isPublic: true,
       authorId: admin.id,
-
-      star: {
-        create: {
-          name: 'Alpha Centauri A',
-          size: 2.8,
-          color: '#fff2d6',
-          mass: 1.1,
+      star: { name: 'TRAPPIST-1', size: 0.8, color: '#ff3300', mass: 0.09 },
+      planets: [
+        {
+          name: 'TRAPPIST-1d',
+          type: 'terrestrial',
+          mass: 0.3,
+          distance: 8,
+          speed: 0.4,
+          size: 0.3,
+          color: '#885544',
+          textureUrl: '/textures/2k_trappist1d.jpg',
+          rotationSpeed: 0.01,
+          axialTilt: 0,
+          orbitalInclination: 0,
         },
-      },
-
-      planets: {
-        create: [
-          {
-            name: 'Proxima b',
-            type: 'terrestrial',
-            mass: 1.3,
-            size: 0.55,
-            distance: 15,
-            speed: 0.18,
-            orbitalInclination: 0,
-            rotationSpeed: 0.5,
-            axialTilt: 10,
-            color: '#6e8f5c',
-          },
-
-          {
-            name: 'Proxima d',
-            type: 'terrestrial',
-            mass: 0.3,
-            size: 0.3,
-            distance: 9,
-            speed: 0.22,
-            orbitalInclination: 2,
-            rotationSpeed: 0.8,
-            axialTilt: 5,
-            color: '#a87a52',
-          },
-
-          {
-            name: 'Alpha Centauri Gas Giant',
-            type: 'gas_giant',
-            mass: 120,
-            size: 1.3,
-            distance: 50,
-            speed: 0.05,
-            orbitalInclination: 1,
-            rotationSpeed: 2,
-            axialTilt: 12,
-            color: '#d6a66f',
-          },
-        ],
-      },
-
-      belts: {
-        create: [
-          {
-            name: 'Outer Debris Belt',
-            distance: 70,
-            width: 15,
-            count: 3500,
-            speed: 0.04,
-            orbitalInclination: 7,
-            color: '#666666',
-          },
-        ],
-      },
+        {
+          name: 'TRAPPIST-1e (Habitable)',
+          type: 'terrestrial',
+          mass: 0.7,
+          distance: 11,
+          speed: 0.32,
+          size: 0.45,
+          color: '#446655',
+          textureUrl: '/textures/2k_trappist1f.jpg',
+          rotationSpeed: 0.01,
+          axialTilt: 0.1,
+          orbitalInclination: 0.01,
+        },
+      ],
+      belts: [],
     },
-  });
+    {
+      name: 'Gliese 581',
+      isDefault: true,
+      isPublic: true,
+      authorId: admin.id,
+      star: { name: 'Gliese 581', size: 0.9, color: '#ff6600', mass: 0.3 },
+      planets: [
+        {
+          name: 'Gliese 581 c',
+          type: 'terrestrial',
+          mass: 5.6,
+          distance: 12,
+          speed: 0.25,
+          size: 0.6,
+          color: '#aa4422',
+          textureUrl: '/textures/2k_mars.jpg',
+          rotationSpeed: 0.02,
+          axialTilt: 0.1,
+          orbitalInclination: 0.05,
+        },
+        {
+          name: 'Gliese 581 d',
+          type: 'terrestrial',
+          mass: 6.9,
+          distance: 18,
+          speed: 0.2,
+          size: 0.7,
+          color: '#335588',
+          textureUrl: '/textures/2k_neptune.jpg',
+          rotationSpeed: 0.01,
+          axialTilt: 0.1,
+          orbitalInclination: 0.02,
+        },
+      ],
+      belts: [],
+    },
+    {
+      name: '55 Cancri',
+      isDefault: true,
+      isPublic: true,
+      authorId: admin.id,
+      star: { name: '55 Cancri A', size: 1.8, color: '#ffcc55', mass: 0.9 },
+      planets: [
+        {
+          name: '55 Cancri e (Janssen)',
+          type: 'terrestrial',
+          mass: 8.6,
+          distance: 5,
+          speed: 0.8,
+          size: 0.5,
+          color: '#ffcc00',
+          textureUrl: '/textures/io.jpg',
+          rotationSpeed: 0.5,
+          axialTilt: 0,
+          orbitalInclination: 0.01,
+        },
+        {
+          name: '55 Cancri b (Galileo)',
+          type: 'gas_giant',
+          mass: 250,
+          distance: 40,
+          speed: 0.06,
+          size: 1.4,
+          color: '#aa7755',
+          textureUrl: '/textures/2k_jupiter.jpg',
+          rotationSpeed: 0.08,
+          axialTilt: 0.02,
+          orbitalInclination: 0.01,
+        },
+      ],
+      belts: [],
+    },
+    {
+      name: 'Proxima Centauri',
+      isDefault: true,
+      isPublic: true,
+      authorId: admin.id,
+      star: { name: 'Proxima', size: 0.6, color: '#ff4400', mass: 0.12 },
+      planets: [
+        {
+          name: 'Proxima b',
+          type: 'terrestrial',
+          mass: 1.2,
+          distance: 7,
+          speed: 0.45,
+          size: 0.4,
+          color: '#55aa88',
+          textureUrl: '/textures/2k_earth.jpg',
+          rotationSpeed: 0.01,
+          axialTilt: 0.2,
+          orbitalInclination: 0.01,
+        },
+      ],
+      belts: [
+        {
+          name: 'Dust Belt',
+          distance: 25,
+          width: 10,
+          count: 1000,
+          speed: 0.02,
+          orbitalInclination: 0.1,
+          color: '#333333',
+        },
+      ],
+    },
+    {
+      name: 'Aethelgard Prime',
+      isDefault: true,
+      isPublic: true,
+      authorId: admin.id,
+      star: {
+        name: 'Aethelgard Binary',
+        size: 4.0,
+        color: '#33ccff',
+        mass: 2.5,
+      },
+      planets: [
+        {
+          name: 'Chronos-9',
+          type: 'terrestrial',
+          mass: 2.5,
+          distance: 30,
+          speed: 0.08,
+          size: 0.9,
+          color: '#442266',
+          textureUrl: '/textures/2k_uranus.jpg',
+          rotationSpeed: 0.2,
+          axialTilt: 0.8,
+          orbitalInclination: 0.05,
+          moons: [
+            {
+              name: 'Echo',
+              size: 0.2,
+              distance: 2.0,
+              speed: 1.5,
+              orbitalInclination: 0.2,
+              color: '#ffffff',
+              textureUrl: '/textures/2k_moon.jpg',
+            },
+          ],
+        },
+        {
+          name: 'Void Sentinel',
+          type: 'gas_giant',
+          mass: 800,
+          distance: 120,
+          speed: 0.02,
+          size: 2.5,
+          color: '#0a0a0a',
+          textureUrl: '/textures/2k_jupiter.jpg',
+          rotationSpeed: 0.01,
+          axialTilt: 0.1,
+          orbitalInclination: 0.01,
+          rings: [
+            {
+              name: 'Dark Ring',
+              innerRadius: 2.5,
+              outerRadius: 4.0,
+              color: '#222222',
+              opacity: 0.9,
+            },
+          ],
+        },
+      ],
+      belts: [
+        {
+          name: 'Singularity Drift',
+          distance: 200,
+          width: 40,
+          count: 8000,
+          speed: 0.005,
+          orbitalInclination: 0.5,
+          color: '#9933ff',
+        },
+      ],
+    },
+    {
+      name: 'Nexus Prime',
+      isDefault: true,
+      isPublic: true,
+      authorId: admin.id,
+      star: { name: 'Nexus Core', size: 5.0, color: '#ffcc00', mass: 5.0 },
+      planets: [
+        {
+          name: 'Inner Forge',
+          type: 'terrestrial',
+          mass: 2.0,
+          distance: 5,
+          speed: 0.5,
+          size: 0.4,
+          color: '#ff4400',
+          rotationSpeed: 0.2,
+        },
+        {
+          name: 'Core World',
+          type: 'terrestrial',
+          mass: 1.0,
+          distance: 15,
+          speed: 0.25,
+          size: 0.6,
+          color: '#00ff88',
+          rotationSpeed: 0.05,
+        },
+        {
+          name: 'Twin Haze',
+          type: 'terrestrial',
+          mass: 0.8,
+          distance: 22,
+          speed: 0.2,
+          size: 0.4,
+          color: '#aaaaaa',
+          rotationSpeed: 0.03,
+        },
+        {
+          name: 'Gas Giant I',
+          type: 'gas_giant',
+          mass: 150,
+          distance: 50,
+          speed: 0.08,
+          size: 1.8,
+          color: '#9966cc',
+          rotationSpeed: 0.1,
+        },
+        {
+          name: 'Gas Giant II',
+          type: 'gas_giant',
+          mass: 200,
+          distance: 70,
+          speed: 0.06,
+          size: 2.0,
+          color: '#cc9933',
+          rotationSpeed: 0.09,
+        },
+        {
+          name: 'Ice Realm',
+          type: 'terrestrial',
+          mass: 0.5,
+          distance: 90,
+          speed: 0.04,
+          size: 0.5,
+          color: '#00ccff',
+          rotationSpeed: 0.02,
+        },
+        {
+          name: 'Distant Eye',
+          type: 'gas_giant',
+          mass: 50,
+          distance: 130,
+          speed: 0.03,
+          size: 1.2,
+          color: '#555555',
+          rotationSpeed: 0.04,
+        },
+        {
+          name: 'Final Reach',
+          type: 'terrestrial',
+          mass: 0.2,
+          distance: 160,
+          speed: 0.02,
+          size: 0.3,
+          color: '#ffffff',
+          rotationSpeed: 0.01,
+        },
+      ],
+      belts: [
+        {
+          name: 'Inner Debris',
+          distance: 10,
+          width: 2,
+          count: 1000,
+          speed: 0.4,
+          color: '#333333',
+          orbitalInclination: 0,
+        },
+        {
+          name: 'Trade Belt',
+          distance: 35,
+          width: 5,
+          count: 3000,
+          speed: 0.15,
+          color: '#333333',
+          orbitalInclination: 0,
+        },
+        {
+          name: 'Outer Barrier',
+          distance: 105,
+          width: 8,
+          count: 5000,
+          speed: 0.05,
+          color: '#333333',
+          orbitalInclination: 0,
+        },
+        {
+          name: 'Deep Void Belt',
+          distance: 150,
+          width: 10,
+          count: 7000,
+          speed: 0.02,
+          color: '#333333',
+          orbitalInclination: 0,
+        },
+      ],
+    },
+  ];
 
-  console.log('Default systems created successfully!');
+  for (const sys of systems) {
+    const systemData: any = {
+      name: sys.name,
+      isDefault: sys.isDefault,
+      isPublic: sys.isPublic,
+      authorId: sys.authorId,
+      star: { create: sys.star },
+      planets: {
+        create: sys.planets.map((p: any) => {
+          const planetData: any = {
+            name: p.name,
+            type: p.type,
+            mass: p.mass,
+            distance: p.distance,
+            speed: p.speed,
+            size: p.size,
+            color: p.color,
+            textureUrl: p.textureUrl || '/textures/default.jpg',
+            rotationSpeed: p.rotationSpeed ?? 0,
+            axialTilt: p.axialTilt ?? 0,
+            orbitalInclination: p.orbitalInclination ?? 0,
+          };
+          if (p.moons && p.moons.length > 0) planetData.moons = { create: p.moons };
+          if (p.rings && p.rings.length > 0) planetData.rings = { create: p.rings };
+          return planetData;
+        }),
+      },
+    };
+
+    if (sys.belts && sys.belts.length > 0) {
+      systemData.belts = { create: sys.belts };
+    }
+
+    await prisma.spaceSystem.create({
+      data: systemData,
+    });
+  }
+  console.log('Seed completed!');
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
