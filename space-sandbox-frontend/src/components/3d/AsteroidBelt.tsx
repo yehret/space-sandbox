@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 
 type AsteroidBeltProps = {
   distance: number;

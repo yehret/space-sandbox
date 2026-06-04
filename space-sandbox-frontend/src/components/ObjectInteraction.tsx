@@ -2,7 +2,7 @@ import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { useUIStore } from '../store/useUiStore';
+import { useUIStore } from '../store/useUIStore';
 
 export function ObjectInteraction() {
   const setFollowTarget = useUIStore((state) => state.setFollowTarget);

@@ -2,7 +2,7 @@ import { Line, Trail } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 import { MoonData, PlanetaryRingData } from '../../types';
 import Moon from './Moon';
 import PlanetaryRing from './PlanetaryRing';

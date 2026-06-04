@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUIStore } from '../store/useUiStore';
+import { useUIStore } from '../store/useUIStore';
 import BeltEditor from './ui/BeltEditor';
 import { PlanetEditor } from './ui/PlanetEditor';
 import StarEditor from './ui/StarEditor';

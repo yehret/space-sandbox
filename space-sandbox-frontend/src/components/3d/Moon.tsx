@@ -2,7 +2,7 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 import { MoonData } from '../../types';
 
 export default function Moon({

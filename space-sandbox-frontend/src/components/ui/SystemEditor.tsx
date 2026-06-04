@@ -1,7 +1,7 @@
 import { useShallow } from 'zustand/shallow';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useSystemStore } from '../../store/useSystemStore';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 
 export const SystemEditor = ({
   onEditPlanet,

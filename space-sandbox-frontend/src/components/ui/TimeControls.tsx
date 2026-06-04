@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/shallow';
-import { useUIStore } from '../../store/useUiStore';
+import { useUIStore } from '../../store/useUIStore';
 
 export const TimeControls = () => {
   const { isPaused, setIsPaused, timeScale, setTimeScale } = useUIStore(

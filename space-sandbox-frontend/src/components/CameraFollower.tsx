@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import * as THREE from 'three';
-import { useUIStore } from '../store/useUiStore';
+import { useUIStore } from '../store/useUIStore';
 
 export function CameraFollower({ controlsRef }: { controlsRef: any }) {
   const followTargetId = useUIStore((state) => state.followTargetId);
