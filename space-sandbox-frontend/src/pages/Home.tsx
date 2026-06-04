@@ -70,8 +70,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030308] text-white flex flex-col items-center justify-center p-8 relative overflow-hidden font-sans">
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
+    <div className="min-h-screen bg-[#030308] text-white flex flex-col font-sans selection:bg-blue-500/30">
+      {/* Canvas Background */}
+      <div className="fixed inset-0 z-0 opacity-80 pointer-events-none">
         <Canvas
           shadows
           camera={{ position: [80, 180, 40], rotation: [-Math.PI / 2, 0, 0], fov: 45, far: 10000 }}>
@@ -79,102 +80,105 @@ export default function Home() {
         </Canvas>
       </div>
 
-      <div className="absolute top-6 right-6 z-20">
-        {user ? (
-          <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold uppercase">
-              {user.username.charAt(0)}
-            </div>
-            <span className="font-medium text-gray-200">{user.username}</span>
-            <button
-              onClick={logout}
-              className="ml-2 text-sm text-red-400 hover:text-red-300 transition-colors">
-              Logout
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/50 px-6 py-2.5 rounded-xl font-bold tracking-widest uppercase transition-all">
-            Login / Register
-          </button>
-        )}
-      </div>
-
-      <h1 className="text-5xl font-black mb-12 tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 z-10 relative">
-        Space Sandbox
-      </h1>
-
-      <div className="bg-[#0a0a10]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl z-10 relative w-full max-w-4xl shadow-2xl flex flex-col">
-        <div className="flex justify-center gap-4 mb-8">
-          {['default', 'community', 'my'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab as any)}
-              className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wider transition-colors border ${
-                activeTab === tab
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-400'
-                  : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10'
-              }`}>
-              {tab.replace('my', 'My Systems')}
-            </button>
-          ))}
+      <header className="relative z-50 grid grid-cols-3 items-center px-8 py-6 w-full max-w-7xl mx-auto">
+        <div />
+        <div className="text-center">
+          <h1 className="text-3xl font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400">
+            Space Sandbox
+          </h1>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-1 min-h-[200px]">
-          {activeTab === 'my' && !user ? (
-            <div className="col-span-full flex flex-col items-center justify-center h-full text-center p-8 bg-white/5 border border-white/10 rounded-2xl border-dashed">
-              <svg
-                className="w-16 h-16 text-white/20 mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-              <h3 className="text-xl font-bold text-gray-200 mb-2">Authentication Required</h3>
-              <p className="text-white/50 mb-6 max-w-md">
-                You need to log in to view, create, or clone systems to your personal collection.
-              </p>
+        <div className="flex justify-end">
+          {user ? (
+            <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold uppercase text-xs">
+                {user.username.charAt(0)}
+              </div>
+              <span className="font-medium text-sm text-gray-200">{user.username}</span>
               <button
-                onClick={() => setIsAuthModalOpen(true)}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold tracking-widest uppercase transition-colors">
-                Log In to Continue
+                onClick={logout}
+                className="text-sm text-red-400/70 hover:text-red-400 transition-colors">
+                Logout
               </button>
             </div>
-          ) : filteredSystems.length > 0 ? (
-            filteredSystems.map((sys) => (
-              <SystemCard
-                key={sys.id}
-                system={sys}
-                currentUserId={user?.id}
-                onClick={() => handleSystemClick(sys.id)}
-                onClone={(e) => handleClone(e, sys.id)}
-                onDelete={(e) => handleDelete(e, sys.id)}
-              />
-            ))
           ) : (
-            <div className="col-span-full flex items-center justify-center text-white/30 italic">
-              No systems found in this category.
-            </div>
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="bg-blue-600/10 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/30 px-6 py-2 rounded-lg font-bold tracking-widest uppercase transition-all">
+              Login
+            </button>
           )}
         </div>
+      </header>
 
-        <div className="mt-10 flex justify-center border-t border-white/10 pt-8">
-          <button
-            onClick={handleCreate}
-            className="px-10 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold tracking-widest uppercase transition-colors">
-            Create New System
-          </button>
+      {/* Main Glass Container */}
+      <main className="relative z-10 flex-grow flex items-center justify-center p-4 w-full">
+        {/* Фіксована висота контейнера (наприклад, 80% екрану) */}
+        <div className="w-full max-w-4xl h-[80vh] bg-[#0a0a10]/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl relative flex flex-col overflow-hidden">
+          {/* Subtle light effect */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+          {/* Tabs (Фіксовані зверху) */}
+          <div className="flex justify-center gap-2 mb-8 relative flex-shrink-0">
+            {['default', 'community', 'my'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider transition-all border ${
+                  activeTab === tab
+                    ? 'bg-blue-600/20 border-blue-500/50 text-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.2)]'
+                    : 'bg-white/5 border-transparent text-white/40 hover:bg-white/10'
+                }`}>
+                {tab.replace('my', 'My Systems')}
+              </button>
+            ))}
+          </div>
+
+          {/* Скролібельна область (Grid) */}
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {activeTab === 'my' && !user ? (
+                <div className="col-span-full flex flex-col items-center justify-center h-full text-center p-8 bg-white/5 border border-white/5 rounded-2xl border-dashed">
+                  <h3 className="text-lg font-bold text-gray-200 mb-2">Authentication Required</h3>
+                  <p className="text-white/40 mb-6 max-w-sm text-sm">
+                    Log in to manage your personal system collection.
+                  </p>
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold text-xs tracking-widest uppercase transition-colors">
+                    Log In
+                  </button>
+                </div>
+              ) : filteredSystems.length > 0 ? (
+                filteredSystems.map((sys) => (
+                  <SystemCard
+                    key={sys.id}
+                    system={sys}
+                    currentUserId={user?.id}
+                    onClick={() => handleSystemClick(sys.id)}
+                    onClone={(e) => handleClone(e, sys.id)}
+                    onDelete={(e) => handleDelete(e, sys.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full flex items-center justify-center text-white/20 italic text-sm py-20">
+                  No systems found in this category.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Create Button (Фіксований знизу) */}
+          <div className="mt-8 flex justify-center border-t border-white/5 pt-8 flex-shrink-0">
+            <button
+              onClick={handleCreate}
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold tracking-widest uppercase text-sm transition-all shadow-lg shadow-blue-900/20">
+              Create New System
+            </button>
+          </div>
         </div>
-      </div>
+      </main>
 
       <Loader containerStyles={{ background: '#030308', zIndex: 40 }} />
-
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );

@@ -1,4 +1,4 @@
-import { Loader, OrbitControls, Stats } from '@react-three/drei';
+import { Loader, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -85,17 +85,17 @@ export default function Sandbox() {
             <CameraResetter controlsRef={controlsRef} />
             <CameraFollower controlsRef={controlsRef} />
 
-            <Stats showPanel={0} className="stats" />
+            {/* <Stats showPanel={0} className="stats" /> */}
           </Suspense>
         </Canvas>
       </div>
 
       <UI />
       <Loader
-        containerStyles={{ background: '#030308' }} // Темний фон космосу
-        innerStyles={{ background: 'rgba(255, 255, 255, 0.1)', width: '300px' }} // Фон смуги
-        barStyles={{ background: '#3b82f6', height: '4px' }} // Синя смуга прогресу (Tailwind blue-500)
-        dataInterpolation={(p) => `Loading Universe ${p.toFixed(0)}%`} // Кастомний текст
+        containerStyles={{ background: '#030308' }}
+        innerStyles={{ background: 'rgba(255, 255, 255, 0.1)', width: '300px' }}
+        barStyles={{ background: '#3b82f6', height: '4px' }}
+        dataInterpolation={(p) => `Loading Universe ${p.toFixed(0)}%`}
         dataStyles={{
           color: '#ffffff',
           fontSize: '14px',

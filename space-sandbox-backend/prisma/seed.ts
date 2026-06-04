@@ -141,8 +141,22 @@ async function main() {
           axialTilt: 0.46,
           orbitalInclination: 0.04,
           rings: [
-            { name: 'Ring B', innerRadius: 1.2, outerRadius: 1.8, color: '#d2c0a5', opacity: 0.8 },
-            { name: 'Ring A', innerRadius: 1.85, outerRadius: 2.2, color: '#e5d3b9', opacity: 0.5 },
+            {
+              name: 'Ring B',
+              innerRadius: 1.2,
+              outerRadius: 1.8,
+              color: '#d2c0a5',
+              opacity: 0.8,
+              textureUrl: '/textures/2k_saturn_ring_alpha.png',
+            },
+            {
+              name: 'Ring A',
+              innerRadius: 1.85,
+              outerRadius: 2.2,
+              color: '#e5d3b9',
+              opacity: 0.5,
+              textureUrl: '/textures/2k_saturn_ring_alpha.png',
+            },
           ],
         },
         {
