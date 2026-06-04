@@ -1,3 +1,4 @@
+import { useAuthStore } from '../../store/useAuthStore';
 import { useSystemStore } from '../../store/useSystemStore';
 
 export const SystemEditor = ({
@@ -9,14 +10,15 @@ export const SystemEditor = ({
   onEditStar: () => void;
   onEditBelt: (id: string) => void;
 }) => {
-  const { currentUser, systems, activeSystemId, addPlanet, addBelt, setFollowTarget } =
-    useSystemStore();
+  const { systems, activeSystemId, addPlanet, addBelt, setFollowTarget } = useSystemStore();
+
+  const { user } = useAuthStore();
   const activeSystem = systems.find((s) => s.id === activeSystemId);
   const planets = activeSystem?.planets || [];
   const star = activeSystem?.star;
   const belts = activeSystem?.belts || [];
 
-  const isOwner = currentUser !== null && activeSystem?.authorId === currentUser.id;
+   const isOwner = user !== null && activeSystem?.authorId === user.id;
 
   const handleAddNewPlanet = () => {
     const newId = crypto.randomUUID();

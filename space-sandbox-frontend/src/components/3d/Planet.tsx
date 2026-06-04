@@ -60,13 +60,12 @@ export default function Planet({
   }, [initialX, initialZ]);
 
   useEffect(() => {
-    // Якщо вибрано "No Texture", скидаємо карту
     if (!textureUrl) {
       setColorMap(null);
       return;
     }
 
-    let isActive = true; // Захист від швидкого перемикання (Race condition)
+    let isActive = true;
     const loader = new THREE.TextureLoader();
 
     loader.load(
@@ -75,7 +74,7 @@ export default function Planet({
         if (!isActive) return;
 
         texture.colorSpace = THREE.SRGBColorSpace;
-        texture.needsUpdate = true; // 🔥 КРИТИЧНО ВАЖЛИВО! Кажемо відеокарті оновити дані
+        texture.needsUpdate = true;
 
         setColorMap(texture);
       },
@@ -93,7 +92,6 @@ export default function Planet({
   useFrame((_, delta) => {
     if (!orbitPositionRef.current || !planetMeshRef.current) return;
 
-    // Clamp delta to prevent jumps when tab is unfocused
     const safeDelta = Math.min(delta, 0.1);
 
     if (!isPaused) {

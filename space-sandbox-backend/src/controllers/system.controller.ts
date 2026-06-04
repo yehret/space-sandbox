@@ -258,3 +258,33 @@ export const getSystemById = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: 'Failed to fetch system' });
   }
 };
+
+export const toggleVisibility = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const id = req.params.id as string;
+    const { isPublic } = req.body;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const system = await prisma.spaceSystem.findUnique({ where: { id } });
+
+    if (!system || system.authorId !== userId) {
+      res.status(403).json({ error: 'Permission denied' });
+      return;
+    }
+
+    const updatedSystem = await prisma.spaceSystem.update({
+      where: { id },
+      data: { isPublic },
+    });
+
+    res.status(200).json(updatedSystem);
+  } catch (error) {
+    console.error('Error updating visibility:', error);
+    res.status(500).json({ error: 'Failed to update visibility' });
+  }
+};

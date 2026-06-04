@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAuthStore } from '../../store/useAuthStore';
 import { useSystemStore } from '../../store/useSystemStore';
 import { MoonData, PlanetaryRingData } from '../../types';
 import { TEXTURE_PRESETS, degToRad, radToDeg } from './editorConstants';
@@ -7,11 +8,13 @@ import { RingEditor } from './RingEditor';
 import { Slider } from './Slider';
 
 export const PlanetEditor = ({ planetId, onClose }: { planetId: string; onClose: () => void }) => {
-  const { currentUser, systems, activeSystemId, updatePlanet, removePlanet } = useSystemStore();
+  const { systems, activeSystemId, updatePlanet, removePlanet } = useSystemStore();
+
+  const { user } = useAuthStore();
 
   const activeSystem = systems.find((s) => s.id === activeSystemId);
   const planet = activeSystem?.planets.find((p) => p.id === planetId);
-  const isOwner = currentUser !== null && activeSystem?.authorId === currentUser.id;
+  const isOwner = user !== null && activeSystem?.authorId === user.id;
 
   const [editingMoonId, setEditingMoonId] = useState<string | null>(null);
   const [editingRingId, setEditingRingId] = useState<string | null>(null);

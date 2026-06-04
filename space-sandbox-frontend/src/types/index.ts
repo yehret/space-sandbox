@@ -66,6 +66,9 @@ export type SpaceSystem = {
   belts: AsteroidBeltData[];
 
   authorId?: string | null;
+  author?: {
+    username: string;
+  };
   isDefault?: boolean;
   isPublic?: boolean;
 };

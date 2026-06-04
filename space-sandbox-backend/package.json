@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -L src/index.ts", 
+    "dev": "nodemon -L src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

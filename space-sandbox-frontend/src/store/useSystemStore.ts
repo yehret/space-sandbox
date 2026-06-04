@@ -1,20 +1,19 @@
 import { create } from 'zustand';
+import { api } from '../api/client';
 import { AsteroidBeltData, PlanetData, SpaceSystem, StarData } from '../types';
 
 interface SystemStore {
-  currentUser: { id: string; name: string } | null;
-  login: (username: string) => void;
-  logout: () => void;
-
   systems: SpaceSystem[];
   activeSystemId: string | null;
-  isPaused: boolean;
-  timeScale: number;
 
-  setIsPaused: (paused: boolean) => void;
-  setTimeScale: (scale: number) => void;
+  fetchSystems: () => Promise<void>;
+  createSystem: (name: string) => Promise<void>;
+  saveActiveSystem: () => Promise<void>;
+  deleteSystem: (id: string) => Promise<void>;
+  cloneSystem: (id: string) => Promise<void>;
+  toggleSystemVisibility: (id: string, isPublic: boolean) => Promise<void>;
+
   setActiveSystem: (id: string | null) => void;
-  addSystem: (name: string) => void;
   updateStar: (data: Partial<StarData>) => void;
   addPlanet: (planet: PlanetData) => void;
   updatePlanet: (planetId: string, data: Partial<PlanetData>) => void;
@@ -22,335 +21,175 @@ interface SystemStore {
   addBelt: (belt: AsteroidBeltData) => void;
   updateBelt: (beltId: string, data: Partial<AsteroidBeltData>) => void;
   removeBelt: (beltId: string) => void;
+  updateSystemName: (name: string) => void;
 
+  isPaused: boolean;
+  timeScale: number;
   showGrid: boolean;
   showTrails: boolean;
   showOrbits: boolean;
   isSidebarOpen: boolean;
   cameraResetTrigger: number;
-
   isZenMode: boolean;
-  toggleZenMode: () => void;
-
   hoveredObjectId: string | null;
-  setHoveredObject: (id: string | null) => void;
-
   followTargetId: string | null;
   followTargetTrigger: number;
-  setFollowTarget: (id: string | null) => void;
 
+  setIsPaused: (paused: boolean) => void;
+  setTimeScale: (scale: number) => void;
+  toggleZenMode: () => void;
+  setHoveredObject: (id: string | null) => void;
+  setFollowTarget: (id: string | null) => void;
   toggleGrid: () => void;
   toggleTrails: () => void;
   toggleOrbits: () => void;
   toggleSidebar: () => void;
   triggerCameraReset: () => void;
-
-  deleteSystem: (id: string) => void;
-  cloneSystem: (id: string) => void;
 }
 
-export const useSystemStore = create<SystemStore>((set) => ({
-  currentUser: { id: 'user-123', name: 'John Doe' },
-
-  login: (username) =>
-    set({
-      currentUser: { id: crypto.randomUUID(), name: username },
-    }),
-
-  logout: () =>
-    set({
-      currentUser: null,
-    }),
-
-  systems: [
-    {
-      id: 'sys-solar',
-      name: 'Solar System',
-      createdAt: new Date().toLocaleDateString('en-US'),
-      isDefault: true,
-      isPublic: true,
-      authorId: 'user-123',
-      star: { name: 'Sun', size: 2.5, color: '#fff4e8', mass: 1 },
-      planets: [
-        {
-          id: 'p-mercury',
-          name: 'Mercury',
-          type: 'terrestrial',
-          mass: 0.055,
-          distance: 8,
-          speed: 0.16,
-          size: 0.2,
-          color: '#8c8c8c',
-          textureUrl: '/textures/2k_mercury.jpg',
-          rotationSpeed: 0.005,
-          axialTilt: 0.03,
-          orbitalInclination: 0.12,
-        },
-        {
-          id: 'p-venus',
-          name: 'Venus',
-          type: 'terrestrial',
-          mass: 0.81,
-          distance: 14,
-          speed: 0.12,
-          size: 0.48,
-          color: '#e3bb76',
-          textureUrl: '/textures/2k_venus_surface.jpg',
-          rotationSpeed: -0.002,
-          axialTilt: 3.1,
-          orbitalInclination: 0.06,
-        },
-        {
-          id: 'p-earth',
-          name: 'Earth',
-          type: 'terrestrial',
-          mass: 1,
-          distance: 20,
-          speed: 0.1,
-          size: 0.5,
-          color: '#2b82c9',
-          textureUrl: '/textures/2k_earth.jpg',
-          rotationSpeed: 0.05,
-          axialTilt: 0.4,
-          orbitalInclination: 0,
-          moons: [
-            {
-              id: 'm-moon',
-              name: 'Moon',
-              size: 0.15,
-              distance: 1.5,
-              speed: 1.2,
-              orbitalInclination: 0.1,
-              color: '#aaaaaa',
-              textureUrl: '/textures/2k_moon.jpg',
-            },
-          ],
-        },
-        {
-          id: 'p-mars',
-          name: 'Mars',
-          type: 'terrestrial',
-          mass: 0.1,
-          distance: 28,
-          speed: 0.08,
-          size: 0.35,
-          color: '#c1440e',
-          textureUrl: '/textures/2k_mars.jpg',
-          rotationSpeed: 0.048,
-          axialTilt: 0.43,
-          orbitalInclination: 0.03,
-        },
-        {
-          id: 'p-jupiter',
-          name: 'Jupiter',
-          type: 'gas_giant',
-          mass: 317,
-          distance: 55,
-          speed: 0.04,
-          size: 1.6,
-          color: '#d39c7e',
-          textureUrl: '/textures/2k_jupiter.jpg',
-          rotationSpeed: 0.12,
-          axialTilt: 0.05,
-          orbitalInclination: 0.02,
-          moons: [
-            {
-              id: 'm-io',
-              name: 'Io',
-              size: 0.12,
-              distance: 2.5,
-              speed: 2.5,
-              orbitalInclination: 0,
-              textureUrl: '/textures/io.jpg',
-              color: '#ffffaa',
-            },
-            {
-              id: 'm-europa',
-              name: 'Europa',
-              size: 0.1,
-              distance: 3.5,
-              speed: 1.8,
-              orbitalInclination: 0,
-              color: '#ffffff',
-            },
-          ],
-        },
-        {
-          id: 'p-saturn',
-          name: 'Saturn',
-          type: 'gas_giant',
-          mass: 95,
-          distance: 80,
-          speed: 0.03,
-          size: 1.3,
-          color: '#ead6b8',
-          textureUrl: '/textures/2k_saturn.jpg',
-          rotationSpeed: 0.11,
-          axialTilt: 0.46,
-          orbitalInclination: 0.04,
-          rings: [
-            {
-              id: 'r-saturn-1',
-              name: 'Ring B',
-              innerRadius: 1.2,
-              outerRadius: 1.8,
-              color: '#d2c0a5',
-              opacity: 0.8,
-            },
-            {
-              id: 'r-saturn-2',
-              name: 'Ring A',
-              innerRadius: 1.85,
-              outerRadius: 2.2,
-              color: '#e5d3b9',
-              opacity: 0.5,
-            },
-          ],
-        },
-        {
-          id: 'p-uranus',
-          name: 'Uranus',
-          type: 'gas_giant',
-          mass: 14.5,
-          distance: 110,
-          speed: 0.02,
-          size: 1.0,
-          color: '#4b70dd',
-          textureUrl: '/textures/2k_uranus.jpg',
-          rotationSpeed: 0.09,
-          axialTilt: 1.71,
-          orbitalInclination: 0.01,
-          rings: [
-            {
-              id: 'r-uranus-1',
-              name: 'Epsilon Ring',
-              innerRadius: 1.5,
-              outerRadius: 1.55,
-              color: '#ffffff',
-              opacity: 0.2,
-            },
-          ],
-        },
-        {
-          id: 'p-neptune',
-          name: 'Neptune',
-          type: 'gas_giant',
-          mass: 17,
-          distance: 140,
-          speed: 0.015,
-          size: 0.95,
-          color: '#274687',
-          textureUrl: '/textures/2k_neptune.jpg',
-          rotationSpeed: 0.1,
-          axialTilt: 0.5,
-          orbitalInclination: 0.03,
-        },
-      ],
-      belts: [
-        {
-          id: 'b-asteroid',
-          name: 'Asteroid Belt',
-          distance: 38,
-          width: 6,
-          count: 2500,
-          speed: 0.06,
-          orbitalInclination: 0.05,
-          color: '#665544',
-        },
-        {
-          id: 'b-kuiper',
-          name: 'Kuiper Belt',
-          distance: 160,
-          width: 20,
-          count: 4000,
-          speed: 0.01,
-          orbitalInclination: 0.1,
-          color: '#445566',
-        },
-      ],
-    },
-    {
-      id: 'sys-trappist',
-      name: 'TRAPPIST-1',
-      createdAt: new Date().toLocaleDateString('en-US'),
-      isDefault: true,
-      isPublic: true,
-      authorId: null,
-      star: { name: 'TRAPPIST-1', size: 0.8, color: '#ff3300', mass: 0.09 },
-      planets: [
-        {
-          id: 'p-t1d',
-          name: 'TRAPPIST-1d',
-          type: 'terrestrial',
-          mass: 0.3,
-          distance: 8,
-          speed: 0.4,
-          size: 0.3,
-          color: '#885544',
-          textureUrl: '/textures/2k_trappist1d.jpg',
-          rotationSpeed: 0.01,
-          axialTilt: 0,
-          orbitalInclination: 0,
-        },
-        {
-          id: 'p-t1e',
-          name: 'TRAPPIST-1e (Habitable)',
-          type: 'terrestrial',
-          mass: 0.7,
-          distance: 11,
-          speed: 0.32,
-          size: 0.45,
-          color: '#446655',
-          textureUrl: '/textures/2k_trappist1f.jpg',
-          rotationSpeed: 0.01,
-          axialTilt: 0.1,
-          orbitalInclination: 0.01,
-        },
-      ],
-      belts: [],
-    },
-    {
-      id: 'sys-kepler',
-      name: 'Kepler-186',
-      createdAt: new Date().toLocaleDateString('en-US'),
-      isDefault: false,
-      isPublic: true, // Відкрито для ком'юніті
-      authorId: 'user-777', // Належить іншому юзеру
-      star: { name: 'Kepler-186', size: 1.5, color: '#ffcc88', mass: 0.5 },
-      planets: [
-        {
-          id: 'p-k186f',
-          name: 'Kepler-186f',
-          type: 'terrestrial',
-          mass: 1.4,
-          distance: 35,
-          speed: 0.15,
-          size: 0.6,
-          color: '#55aa55',
-          textureUrl: '/textures/2k_trappist1f.jpg',
-          rotationSpeed: 0.04,
-          axialTilt: 0.3,
-          orbitalInclination: 0,
-        },
-      ],
-      belts: [],
-    },
-    {
-      id: 'sys-my-1',
-      name: 'My First Empire',
-      createdAt: new Date().toLocaleDateString('en-US'),
-      isDefault: false,
-      isPublic: false, // Приватна система
-      authorId: 'user-123', // Належить поточному юзеру
-      star: { name: 'Death Star', size: 4, color: '#ff2400', mass: 2 },
-      planets: [],
-      belts: [],
-    },
-  ],
+export const useSystemStore = create<SystemStore>((set, get) => ({
+  systems: [],
   activeSystemId: null,
+
+  fetchSystems: async () => {
+    try {
+      const response = await api.get('/systems');
+      set({ systems: response.data });
+    } catch (error) {
+      console.error('Failed to fetch systems:', error);
+    }
+  },
+
+  createSystem: async (name) => {
+    try {
+      const response = await api.post('/systems', { name });
+      const newSystem = response.data;
+      set((state) => ({
+        systems: [...state.systems, newSystem],
+        activeSystemId: newSystem.id,
+      }));
+    } catch (error) {
+      console.error('Failed to create system:', error);
+    }
+  },
+
+  saveActiveSystem: async () => {
+    const { activeSystemId, systems } = get();
+    if (!activeSystemId) return;
+
+    const systemToSave = systems.find((s) => s.id === activeSystemId);
+    if (!systemToSave) return;
+
+    try {
+      await api.put(`/systems/${activeSystemId}`, systemToSave);
+      console.log('System saved successfully!');
+    } catch (error) {
+      console.error('Failed to save system:', error);
+    }
+  },
+
+  deleteSystem: async (id) => {
+    try {
+      await api.delete(`/systems/${id}`);
+      set((state) => ({
+        systems: state.systems.filter((sys) => sys.id !== id),
+        activeSystemId: state.activeSystemId === id ? null : state.activeSystemId,
+      }));
+    } catch (error) {
+      console.error('Failed to delete system:', error);
+    }
+  },
+
+  cloneSystem: async (id) => {
+    api.post(`/systems/${id}/clone`);
+    console.warn('Clone endpoint needed on backend');
+  },
+
+  updateSystemName: (name) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId ? { ...sys, name } : sys,
+      ),
+    })),
+
+  setActiveSystem: (id) => set({ activeSystemId: id, followTargetId: null }),
+
+  updateStar: (data) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId && sys.star
+          ? { ...sys, star: { ...sys.star, ...data } }
+          : sys,
+      ),
+    })),
+
+  addPlanet: (planet) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId ? { ...sys, planets: [...sys.planets, planet] } : sys,
+      ),
+    })),
+
+  updatePlanet: (planetId, data) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId
+          ? { ...sys, planets: sys.planets.map((p) => (p.id === planetId ? { ...p, ...data } : p)) }
+          : sys,
+      ),
+    })),
+
+  removePlanet: (planetId) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId
+          ? { ...sys, planets: sys.planets.filter((p) => p.id !== planetId) }
+          : sys,
+      ),
+    })),
+
+  addBelt: (belt) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId ? { ...sys, belts: [...sys.belts, belt] } : sys,
+      ),
+    })),
+
+  updateBelt: (beltId, data) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId
+          ? { ...sys, belts: sys.belts.map((b) => (b.id === beltId ? { ...b, ...data } : b)) }
+          : sys,
+      ),
+    })),
+
+  removeBelt: (beltId) =>
+    set((state) => ({
+      systems: state.systems.map((sys) =>
+        sys.id === state.activeSystemId
+          ? { ...sys, belts: sys.belts.filter((b) => b.id !== beltId) }
+          : sys,
+      ),
+    })),
+
+  toggleSystemVisibility: async (id, isPublic) => {
+    try {
+      await api.patch(`/systems/${id}/visibility`, { isPublic });
+      set((state) => ({
+        systems: state.systems.map((sys) => (sys.id === id ? { ...sys, isPublic } : sys)),
+      }));
+    } catch (error) {
+      console.error('Failed to change visibility:', error);
+    }
+  },
+
+  // ==========================================
+  // СТАН UI
+  // ==========================================
+
   isPaused: false,
   timeScale: 1,
-
   showGrid: true,
   showTrails: true,
   showOrbits: true,
@@ -374,98 +213,6 @@ export const useSystemStore = create<SystemStore>((set) => ({
   toggleOrbits: () => set((state) => ({ showOrbits: !state.showOrbits })),
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   triggerCameraReset: () => set((state) => ({ cameraResetTrigger: state.cameraResetTrigger + 1 })),
-
   setIsPaused: (paused) => set({ isPaused: paused }),
   setTimeScale: (scale) => set({ timeScale: scale }),
-  setActiveSystem: (id) => set({ activeSystemId: id }),
-
-  addSystem: (name) =>
-    set((state) => {
-      const newSystem: SpaceSystem = {
-        id: crypto.randomUUID(),
-        name,
-        createdAt: new Date().toLocaleDateString('uk-UA'),
-        authorId: state.currentUser?.id || null, // Присвоюємо авторство
-        isDefault: false,
-        isPublic: false,
-        star: { name: 'Нова Зірка', size: 1, color: '#ffffff', mass: 1 },
-        planets: [],
-        belts: [],
-      };
-      return { systems: [...state.systems, newSystem], activeSystemId: newSystem.id };
-    }),
-  updateStar: (data) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId ? { ...sys, star: { ...sys.star, ...data } } : sys,
-      ),
-    })),
-  addPlanet: (planet) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId ? { ...sys, planets: [...sys.planets, planet] } : sys,
-      ),
-    })),
-  updatePlanet: (planetId, data) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId
-          ? { ...sys, planets: sys.planets.map((p) => (p.id === planetId ? { ...p, ...data } : p)) }
-          : sys,
-      ),
-    })),
-  removePlanet: (planetId) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId
-          ? { ...sys, planets: sys.planets.filter((p) => p.id !== planetId) }
-          : sys,
-      ),
-    })),
-  addBelt: (belt) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId ? { ...sys, belts: [...sys.belts, belt] } : sys,
-      ),
-    })),
-  updateBelt: (beltId, data) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId
-          ? { ...sys, belts: sys.belts.map((b) => (b.id === beltId ? { ...b, ...data } : b)) }
-          : sys,
-      ),
-    })),
-  removeBelt: (beltId) =>
-    set((state) => ({
-      systems: state.systems.map((sys) =>
-        sys.id === state.activeSystemId
-          ? { ...sys, belts: sys.belts.filter((b) => b.id !== beltId) }
-          : sys,
-      ),
-    })),
-
-  deleteSystem: (id) =>
-    set((state) => ({
-      systems: state.systems.filter((sys) => sys.id !== id),
-    })),
-
-  cloneSystem: (id) =>
-    set((state) => {
-      const sysToClone = state.systems.find((s) => s.id === id);
-      if (!sysToClone) return state;
-
-      // Робимо глибоку копію системи (щоб зміна копії не впливала на оригінал)
-      const newSys: SpaceSystem = structuredClone(sysToClone);
-
-      // Оновлюємо метадані для копії
-      newSys.id = crypto.randomUUID();
-      newSys.name = `${sysToClone.name} (Copy)`;
-      newSys.authorId = state.currentUser?.id || null; // Робимо поточного юзера власником
-      newSys.isDefault = false; // Це вже не базова система
-      newSys.isPublic = false; // За замовчуванням копія приватна
-      newSys.createdAt = new Date().toLocaleDateString('uk-UA');
-
-      return { systems: [...state.systems, newSys] };
-    }),
 }));

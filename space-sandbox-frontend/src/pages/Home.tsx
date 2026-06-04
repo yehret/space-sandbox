@@ -1,35 +1,30 @@
 import { Loader } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import System from '../components/3d/System';
+import AuthModal from '../components/ui/AuthModal';
+import { SystemCard } from '../components/ui/SystemCard';
+import { useAuthStore } from '../store/useAuthStore';
 import { useSystemStore } from '../store/useSystemStore';
 
 export default function Home() {
   const navigate = useNavigate();
-  const systems = useSystemStore((state) => state.systems);
 
-  const currentUser = useSystemStore((state) => state.currentUser);
-  const login = useSystemStore((state) => state.login);
-  const logout = useSystemStore((state) => state.logout);
-
-  const addSystem = useSystemStore((state) => state.addSystem);
-  const deleteSystem = useSystemStore((state) => state.deleteSystem);
-  const cloneSystem = useSystemStore((state) => state.cloneSystem);
+  const { systems, createSystem, deleteSystem, cloneSystem, fetchSystems } = useSystemStore();
+  const { user, logout } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<'default' | 'community' | 'my'>('default');
-
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    fetchSystems();
+  }, [fetchSystems, user]);
 
   const filteredSystems = systems.filter((sys) => {
     if (activeTab === 'default') return sys.isDefault;
     if (activeTab === 'community') return sys.isPublic && !sys.isDefault;
-    if (activeTab === 'my') return sys.authorId === currentUser?.id;
+    if (activeTab === 'my') return sys.authorId === user?.id;
     return false;
   });
 
@@ -37,13 +32,13 @@ export default function Home() {
     navigate(`/sandbox/${id}`);
   };
 
-  const handleCreate = () => {
-    if (!currentUser) {
+  const handleCreate = async () => {
+    if (!user) {
       setIsAuthModalOpen(true);
       return;
     }
     const newName = `New System ${systems.length + 1}`;
-    addSystem(newName);
+    await createSystem(newName);
     setActiveTab('my');
   };
 
@@ -56,7 +51,7 @@ export default function Home() {
 
   const handleClone = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (!currentUser) {
+    if (!user) {
       setIsAuthModalOpen(true);
       return;
     }
@@ -64,33 +59,8 @@ export default function Home() {
     setActiveTab('my');
   };
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError('');
-
-    if (username.length < 3) {
-      setAuthError('Username must be at least 3 characters.');
-      return;
-    }
-    if (password.length < 4) {
-      setAuthError('Password must be at least 4 characters.');
-      return;
-    }
-    if (authMode === 'register' && password !== confirmPassword) {
-      setAuthError('Passwords do not match.');
-      return;
-    }
-
-    login(username);
-    setIsAuthModalOpen(false);
-    setUsername('');
-    setPassword('');
-    setConfirmPassword('');
-  };
-
   return (
     <div className="min-h-screen bg-[#030308] text-white flex flex-col items-center justify-center p-8 relative overflow-hidden font-sans">
-      {/* 3D ФОН */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
         <Canvas
           shadows
@@ -100,12 +70,12 @@ export default function Home() {
       </div>
 
       <div className="absolute top-6 right-6 z-20">
-        {currentUser ? (
+        {user ? (
           <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-xl">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold">
-              {currentUser.name.charAt(0).toUpperCase()}
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold uppercase">
+              {user.username.charAt(0)}
             </div>
-            <span className="font-medium text-gray-200">{currentUser.name}</span>
+            <span className="font-medium text-gray-200">{user.username}</span>
             <button
               onClick={logout}
               className="ml-2 text-sm text-red-400 hover:text-red-300 transition-colors">
@@ -142,7 +112,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-1 min-h-[200px]">
-          {activeTab === 'my' && !currentUser ? (
+          {activeTab === 'my' && !user ? (
             <div className="col-span-full flex flex-col items-center justify-center h-full text-center p-8 bg-white/5 border border-white/10 rounded-2xl border-dashed">
               <svg
                 className="w-16 h-16 text-white/20 mb-4"
@@ -168,58 +138,14 @@ export default function Home() {
             </div>
           ) : filteredSystems.length > 0 ? (
             filteredSystems.map((sys) => (
-              <div
+              <SystemCard
                 key={sys.id}
+                system={sys}
+                currentUserId={user?.id}
                 onClick={() => handleSystemClick(sys.id)}
-                className="relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 p-6 rounded-2xl cursor-pointer transition-all duration-300 group flex flex-col items-center text-center">
-                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {sys.authorId !== currentUser?.id && (
-                    <button
-                      onClick={(e) => handleClone(e, sys.id)}
-                      className="p-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg transition-colors"
-                      title="Clone to My Systems">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </button>
-                  )}
-
-                  {sys.authorId === currentUser?.id && (
-                    <button
-                      onClick={(e) => handleDelete(e, sys.id)}
-                      className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
-                      title="Delete System">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-
-                <div
-                  className="w-16 h-16 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] mb-4 flex items-center justify-center border-2 border-white/10"
-                  style={{ backgroundColor: sys.star.color }}
-                />
-                <h3 className="text-lg font-bold text-gray-200">{sys.name}</h3>
-              </div>
+                onClone={(e) => handleClone(e, sys.id)}
+                onDelete={(e) => handleDelete(e, sys.id)}
+              />
             ))
           ) : (
             <div className="col-span-full flex items-center justify-center text-white/30 italic">
@@ -237,100 +163,9 @@ export default function Home() {
         </div>
       </div>
 
-      <Loader containerStyles={{ background: '#030308', zIndex: 50 }} />
+      <Loader containerStyles={{ background: '#030308', zIndex: 40 }} />
 
-      {isAuthModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#0a0a10] border border-white/10 p-8 rounded-2xl w-full max-w-md shadow-2xl relative">
-            <button
-              onClick={() => setIsAuthModalOpen(false)}
-              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            <h2 className="text-3xl font-black mb-2 uppercase tracking-widest text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400">
-              {authMode === 'login' ? 'Welcome Back' : 'Join Us'}
-            </h2>
-            <p className="text-white/50 text-center mb-8">
-              {authMode === 'login'
-                ? 'Enter your details to access your universe.'
-                : 'Create an account to save your systems.'}
-            </p>
-
-            <form onSubmit={handleAuthSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="text-xs text-white/50 uppercase tracking-wider block mb-1">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Commander123"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-blue-500 transition-colors"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-white/50 uppercase tracking-wider block mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-blue-500 transition-colors"
-                  required
-                />
-              </div>
-
-              {authMode === 'register' && (
-                <div>
-                  <label className="text-xs text-white/50 uppercase tracking-wider block mb-1">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-blue-500 transition-colors"
-                    required
-                  />
-                </div>
-              )}
-
-              {authError && (
-                <p className="text-red-400 text-sm font-medium text-center">{authError}</p>
-              )}
-
-              <button
-                type="submit"
-                className="mt-4 w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold tracking-widest uppercase transition-colors shadow-lg shadow-blue-500/20">
-                {authMode === 'login' ? 'Login' : 'Register'}
-              </button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-white/50">
-              {authMode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-              <button
-                onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
-                {authMode === 'login' ? 'Register here' : 'Log in here'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }
