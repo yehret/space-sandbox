@@ -38,3 +38,25 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
     res.status(401).json({ error: 'Authorization header missing' });
   }
 };
+
+export const optionalAuth = (req: Request, res: Response, next: NextFunction): void => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+      next();
+      return;
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (!err && decoded) {
+        req.user = decoded as { id: string; username: string };
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+};

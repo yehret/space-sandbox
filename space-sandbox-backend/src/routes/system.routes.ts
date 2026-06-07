@@ -8,12 +8,12 @@ import {
   toggleVisibility,
   updateSystem,
 } from '../controllers/system.controller';
-import { authenticateJWT } from '../middleware/auth.middleware';
+import { authenticateJWT, optionalAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
 router.get('/', getSystems);
-router.get('/:id', getSystemById);
+router.get('/:id', optionalAuth, getSystemById);
 
 router.post('/', authenticateJWT, createSystem);
 router.delete('/:id', authenticateJWT, deleteSystem);

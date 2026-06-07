@@ -16,6 +16,8 @@ services:
   backend:
     build: ./space-sandbox-backend
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/space_sandbox"
       PORT: 3000
@@ -24,16 +26,6 @@ services:
     networks:
       - app-network
 
-  frontend:
-    build: ./space-sandbox-frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    networks:
-      - app-network
-
 networks:
   app-network:
     driver: bridge
-
-volumes:
